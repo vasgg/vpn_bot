@@ -1,0 +1,255 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+docs/autosummary/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+*.ipynb
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+agencybot/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# VS Code settings
+.vscode/
+
+# VS Code extensions
+*.code-workspace
+
+# Pylint report
+pylint-report.txt
+
+# Bandit report
+bandit-report.txt
+
+# Pydocstyle report
+pydocstyle-report.txt
+
+# Black
+.black
+
+# Build artifacts and logs
+*.out
+*.obj
+*.dll
+*.class
+*.pyo
+*.pyd
+*.exe
+*.o
+*.a
+*.lib
+*.so
+*.dylib
+*.la
+*.lai
+
+# macOS
+.DS_Store
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.db
+*.lnk
+
+# Compiled source code
+*.pyc
+
+# Archive files
+*.tar
+*.zip
+*.7z
+*.bz2
+*.gz
+*.rar
+*.tar.gz
+*.tgz
+*.xz
+*.zst
+*.lz4
+*.lzma
+
+# Log files
+logs/
+
+# Dependency directories
+node_modules/
+jspm_packages/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# AWS SAM build artifacts
+.aws-sam/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.crc
+.terraform/
+.terraform.d/
+
+# Ansible
+*.retry
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Backup files
+*.bak
+*.old
+*.orig
+*.save
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Sphinx
+docs/_templates/
+docs/_static/
+
+# Python wheels
+*.whl
+
+# Python virtual environment
+**/venv/
+**/env/
+**/.venv/
+**/.env/
+.virtualenv/
+.virtualenvs/
+
+# Distribution / packaging
+share/
+.var/
+
+/src/images/
+__pycache__
+.idea
+src/leadtgbot.egg-info
