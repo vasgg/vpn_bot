@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
 from database.database_connector import get_db
 from database.models import Base
-from vpn_bot.config import settings
+from bot.config import settings
 
 
 async def create_or_drop_db(engine: AsyncEngine, create: bool = True):

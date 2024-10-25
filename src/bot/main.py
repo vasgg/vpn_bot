@@ -8,16 +8,17 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from database.database_connector import get_db
-from vpn_bot.internal.commands import set_bot_commands
-from vpn_bot.internal.lifespan import on_shutdown, on_startup
-from vpn_bot.middlewares.auth_middleware import AuthMiddleware
-from vpn_bot.middlewares.session_middleware import DBSessionMiddleware
-from vpn_bot.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
-from vpn_bot.handlers.base_handlers import router as base_router
-from vpn_bot.handlers.errors_handler import router as errors_router
-from vpn_bot.internal.logging_config import setup_logs
+from bot.internal.commands import set_bot_commands
+from bot.internal.lifespan import on_shutdown, on_startup
+from bot.middlewares.auth_middleware import AuthMiddleware
+from bot.middlewares.session_middleware import DBSessionMiddleware
+from bot.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
+from bot.handlers.base_handlers import router as base_router
+from bot.handlers.errors_handler import router as errors_router
+from bot.handlers.payment_handlers import router as payment_router
+from bot.internal.logging_config import setup_logs
 
-from vpn_bot.config import Settings
+from bot.config import Settings
 
 
 async def main():
@@ -46,11 +47,12 @@ async def main():
     db_session_middleware = DBSessionMiddleware(db)
     dispatcher.message.middleware(db_session_middleware)
     dispatcher.callback_query.middleware(db_session_middleware)
-    dispatcher.message.middleware(AuthMiddleware())
-    dispatcher.callback_query.middleware(AuthMiddleware())
+    # dispatcher.message.middleware(AuthMiddleware())
+    # dispatcher.callback_query.middleware(AuthMiddleware())
     dispatcher.include_routers(
         base_router,
         errors_router,
+        payment_router,
     )
 
     await dispatcher.start_polling(bot)

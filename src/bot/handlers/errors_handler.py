@@ -5,7 +5,7 @@ import aiogram
 from aiogram import Router
 from aiogram.types import ErrorEvent
 
-from vpn_bot.config import Settings
+from bot.config import Settings
 
 router = Router()
 

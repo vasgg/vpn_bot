@@ -5,7 +5,7 @@ import os
 from aiogram import Bot
 from asyncio import Queue, Task
 
-from vpn_bot.config import settings
+from bot.config import settings
 
 
 async def on_startup(bot: Bot):
@@ -13,7 +13,7 @@ async def on_startup(bot: Bot):
     try:
         await bot.send_message(
             settings.ADMIN_ID,
-            f'<b>{folder.replace("_", " ")} shutdown</b>',
+            f'<b>{folder.replace("_", " ")} started</b>',
             disable_notification=True,
         )
     except:

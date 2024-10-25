@@ -19,6 +19,7 @@ class User(Base):
     fullname: Mapped[str]
     username: Mapped[str | None] = mapped_column(String(32))
     phone_number: Mapped[str | None] = mapped_column(String(20))
+    expired_at: Mapped[datetime]
 
     def __str__(self):
         return f"User(id={self.id}, fullname={self.fullname}, telegram_id={self.telegram_id})"

@@ -6,7 +6,7 @@ from pathlib import Path
 
 def setup_logs():
     Path("logs").mkdir(parents=True, exist_ok=True)
-    logging_config = get_logging_config('vpn_bot')
+    logging_config = get_logging_config('bot')
     logging.config.dictConfig(logging_config)
 
 
