@@ -10,12 +10,3 @@ def demo_access_kb() -> InlineKeyboardMarkup:
         callback_data="1z",
     )
     return builder.as_markup()
-
-
-def pay():
-    builder = InlineKeyboardBuilder()
-    builder.button(
-        text="Buy subscription",
-        callback_data="subscription",
-    )
-    return builder.as_markup()

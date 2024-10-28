@@ -20,6 +20,7 @@ class User(Base):
     fullname: Mapped[str]
     username: Mapped[str | None] = mapped_column(String(32))
     phone_number: Mapped[str | None] = mapped_column(String(20))
+    demo_access_used: Mapped[bool] = mapped_column(default=False)
     expired_at: Mapped[datetime]
 
     def __str__(self):

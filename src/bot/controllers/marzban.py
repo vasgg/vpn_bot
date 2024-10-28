@@ -40,7 +40,6 @@ async def create_marzban_user(username: str, tg_id: int, token: str, expire_afte
     data = {
         "username": pink.convert(username).replace(" ", "_"),
         "expire": expire_timestamp,
-        "auto_delete_in_days": 7 * expire_after_weeks,
         "note": f"Telegram user: {username}, tg_id: {tg_id}",
         "proxies": {"vmess": {"id": str(uuid4())}},
     }
