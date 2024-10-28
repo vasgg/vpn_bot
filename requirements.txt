@@ -80,3 +80,7 @@ typing-extensions==4.12.2
     #   sqlalchemy
 yarl==1.16.0
     # via aiohttp
+
+httpx~=0.27.2
+
+pinkhash~=0.0.7
