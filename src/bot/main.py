@@ -9,8 +9,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from database.database_connector import get_db
 from bot.internal.commands import set_bot_commands
-from bot.internal.lifespan import on_shutdown, on_startup
-from bot.middlewares.auth_middleware import AuthMiddleware
+from bot.internal.notify_admin import on_shutdown, on_startup
 from bot.middlewares.session_middleware import DBSessionMiddleware
 from bot.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
 from bot.handlers.base_handlers import router as base_router
@@ -47,6 +46,7 @@ async def main():
     db_session_middleware = DBSessionMiddleware(db)
     dispatcher.message.middleware(db_session_middleware)
     dispatcher.callback_query.middleware(db_session_middleware)
+    # TODO: аус миддварь пока вообще убрана, позже надо сделать на отдельные роуты
     # dispatcher.message.middleware(AuthMiddleware())
     # dispatcher.callback_query.middleware(AuthMiddleware())
     dispatcher.include_routers(
