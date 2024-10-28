@@ -3,7 +3,7 @@ from typing import Any, Awaitable, Callable, Dict
 from aiogram import BaseMiddleware
 from aiogram.types import Message
 
-from database.crud.user import add_user_to_db, get_user_from_db_by_tg_id
+from bot.controllers.crud.user import add_user_to_db, get_user_from_db_by_tg_id
 
 
 class AuthMiddleware(BaseMiddleware):

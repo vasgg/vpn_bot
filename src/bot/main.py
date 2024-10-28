@@ -8,8 +8,8 @@ from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from database.database_connector import get_db
-from bot.internal.commands import set_bot_commands
-from bot.internal.notify_admin import on_shutdown, on_startup
+from bot.controllers.commands import set_bot_commands
+from bot.controllers.notify_admin import on_shutdown, on_startup
 from bot.middlewares.session_middleware import DBSessionMiddleware
 from bot.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
 from bot.handlers.base_handlers import router as base_router
