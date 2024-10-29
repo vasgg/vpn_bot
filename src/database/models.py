@@ -1,6 +1,4 @@
 from datetime import datetime
-from uuid import UUID
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
 from sqlalchemy import BigInteger, DateTime, ForeignKey, String, UniqueConstraint, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -19,9 +17,10 @@ class User(Base):
     tg_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     fullname: Mapped[str]
     username: Mapped[str | None] = mapped_column(String(32))
+    marzban_username: Mapped[str]
     phone_number: Mapped[str | None] = mapped_column(String(20))
     demo_access_used: Mapped[bool] = mapped_column(default=False)
-    expired_at: Mapped[datetime]
+    expired_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     def __str__(self):
         return f"User fullname={self.fullname}, telegram_id={self.tg_id})"
@@ -35,7 +34,6 @@ class Link(Base):
     __table_args__ = (UniqueConstraint('user_tg_id', 'url'),)
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    user_marzban_id: Mapped[UUID] = mapped_column(PGUUID(as_uuid=True))
     user_tg_id: Mapped[int] = mapped_column(ForeignKey('users.tg_id'))
     url: Mapped[str]
 
