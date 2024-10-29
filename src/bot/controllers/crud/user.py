@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 import logging
 
 from dateutil.relativedelta import relativedelta
@@ -31,10 +31,11 @@ async def get_all_users_ids(db_session: AsyncSession) -> list[User.tg_id]:
 
 
 async def update_user_expiration(user: User, months: int, db_session: AsyncSession):
-    current_time = datetime.now()
+    current_time = datetime.now(UTC)
     if user.expired_at > current_time:
         user.expired_at += relativedelta(months=months)
     else:
         user.expired_at = current_time + relativedelta(months=months)
     db_session.add(user)
     logger.info(f"Подписка пользователя {user.tg_id} обновлена до {user.expired_at}")
+    return user.expired_at
