@@ -23,6 +23,6 @@ texts = {
                           '├ proxy type: <b>{proxy_type}</b>\n'
                           '├ valid until: <b>{valid_until}</b>\n'
                           '└ days left: <b>{days_left}</b>\n\n',
-
+    'choose_action': 'Choose an option:',
 }
 # fmt: on

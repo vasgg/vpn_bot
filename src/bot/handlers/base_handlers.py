@@ -27,6 +27,13 @@ async def start(message: Message, db_session: AsyncSession) -> None:
     user = await get_user_from_db_by_tg_id(message.from_user.id, db_session)
     current_time = datetime.now(UTC)
     if not user:
+        # await message.answer(
+        #     texts['user_expired'].format(
+        #         user_fullname=message.from_user.full_name,
+        #         status='Inactive',
+        #     ),
+        #     reply_markup=connect_vpn_kb(),
+        # )
         prices = [LabeledPrice(label="XTR", amount=SubscriptionPrice.ONE_WEEK_DEMO_ACCESS.value)]
         await message.answer_invoice(
             title="Demo access to VPN",
@@ -54,8 +61,10 @@ async def start(message: Message, db_session: AsyncSession) -> None:
         else:
             await message.answer(
                 texts['user_expired'].format(
-                    user_fullname=message.from_user.full_name, status='Inactive', reply_markup=connect_vpn_kb()
-                )
+                    user_fullname=message.from_user.full_name,
+                    status='Inactive',
+                ),
+                reply_markup=connect_vpn_kb(),
             )
 
 
@@ -66,6 +75,9 @@ async def subscription_prolongation(
 ) -> None:
     await callback.answer()
     match callback_data.stars_amount:
+        case SubscriptionPrice.ONE_WEEK_DEMO_ACCESS:
+            prices = [LabeledPrice(label="XTR", amount=SubscriptionPrice.ONE_WEEK_DEMO_ACCESS.value)]
+            description = 'Access to VPN for 1 week'
         case SubscriptionPrice.ONE_MONTH_SUBSCRIPTION:
             prices = [LabeledPrice(label="XTR", amount=SubscriptionPrice.ONE_MONTH_SUBSCRIPTION.value)]
             description = 'Access to VPN for 1 month'
@@ -104,10 +116,17 @@ async def close_links(callback: CallbackQuery) -> None:
 @router.callback_query(F.data == 'connect')
 async def close_links(callback: CallbackQuery) -> None:
     await callback.answer()
+
+    # await callback.message.answer_invoice(
+    #     title="Connect to VPN",
+    #     description="For access to VPN, please purchase a subscription",
+    #     payload="VPN access",
+    #     currency="XTR",
+    #     prices=prices,
+    #     start_parameter="stars-payment",
+    #     reply_markup=buy_subscription_kb(demo_access_used),
+    # )
     await callback.message.answer(
-        texts['user_expired'].format(
-            user_fullname=callback.from_user.full_name,
-            status='Inactive',
-        ),
+        texts['choose_action'],
         reply_markup=buy_subscription_kb(),
     )
