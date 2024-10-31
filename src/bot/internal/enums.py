@@ -1,13 +1,14 @@
-from enum import IntEnum, StrEnum, auto
+from enum import StrEnum, auto
 
 
-class Stage(StrEnum):
-    PROD = auto()
-    DEV = auto()
+class SubscriptionPlan(StrEnum):
+    ONE_WEEK_DEMO_ACCESS = auto()
+    ONE_MONTH_SUBSCRIPTION = auto()
+    SIX_MONTH_SUBSCRIPTION = auto()
+    ONE_YEAR_SUBSCRIPTION = auto()
 
 
-class SubscriptionPrice(IntEnum):
-    ONE_WEEK_DEMO_ACCESS = 1
-    ONE_MONTH_SUBSCRIPTION = 10
-    SIX_MONTH_SUBSCRIPTION = 20
-    ONE_YEAR_SUBSCRIPTION = 30
+class MenuAction(StrEnum):
+    CONNECT_VPN = auto()
+    SHOW_LINKS = auto()
+    CLOSE_LINKS = auto()
