@@ -13,7 +13,7 @@ async def on_startup(bot: Bot):
     try:
         await bot.send_message(
             settings.ADMIN_ID,
-            f'<b>{folder.replace("_", " ")} started</b>',
+            f'<b>{folder.replace("_", " ")} started</b>\n\n/start',
             disable_notification=True,
         )
     except:

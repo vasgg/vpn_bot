@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 
 async def add_user_to_db(user, db_session: AsyncSession) -> User:
-    new_user = User(tg_id=user.id, fullname=user.full_name, username=user.username, phone_number=user.phone_number)
+    new_user = User(tg_id=user.id, fullname=user.full_name, username=user.username)
     db_session.add(new_user)
     await db_session.flush()
     return new_user
@@ -30,12 +30,12 @@ async def get_all_users_ids(db_session: AsyncSession) -> list[User.tg_id]:
     return list(result.scalars().all())
 
 
-async def update_user_expiration(user: User, months: int, db_session: AsyncSession):
+async def update_db_user_expiration(user: User, duration: relativedelta, db_session: AsyncSession):
     current_time = datetime.now(UTC)
     if user.expired_at > current_time:
-        user.expired_at += relativedelta(months=months)
+        user.expired_at += duration
     else:
-        user.expired_at = current_time + relativedelta(months=months)
+        user.expired_at = current_time + duration
     db_session.add(user)
-    logger.info(f"Подписка пользователя {user.tg_id} обновлена до {user.expired_at}")
+    logger.info(f"Subscription for {user.tg_id} prolonged to {user.expired_at}")
     return user.expired_at
