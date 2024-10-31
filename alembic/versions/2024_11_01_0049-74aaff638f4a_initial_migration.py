@@ -1,8 +1,8 @@
 """initial_migration
 
-Revision ID: 36a8f2c7d81f
+Revision ID: 74aaff638f4a
 Revises: 
-Create Date: 2024-10-29 18:07:31.963457
+Create Date: 2024-11-01 00:49:20.578525
 
 """
 
@@ -13,7 +13,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '36a8f2c7d81f'
+revision: str = '74aaff638f4a'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -25,10 +25,9 @@ def upgrade() -> None:
         sa.Column('tg_id', sa.BigInteger(), nullable=False),
         sa.Column('fullname', sa.String(), nullable=False),
         sa.Column('username', sa.String(length=32), nullable=True),
-        sa.Column('marzban_username', sa.String(), nullable=False),
-        sa.Column('phone_number', sa.String(length=20), nullable=True),
+        sa.Column('marzban_username', sa.String(), nullable=True),
         sa.Column('demo_access_used', sa.Boolean(), nullable=False),
-        sa.Column('expired_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+        sa.Column('expired_at', sa.DateTime(timezone=True), nullable=True),
         sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
         sa.PrimaryKeyConstraint('tg_id'),
     )

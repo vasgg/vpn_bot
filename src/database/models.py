@@ -17,10 +17,9 @@ class User(Base):
     tg_id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     fullname: Mapped[str]
     username: Mapped[str | None] = mapped_column(String(32))
-    marzban_username: Mapped[str]
-    phone_number: Mapped[str | None] = mapped_column(String(20))
+    marzban_username: Mapped[str | None]
     demo_access_used: Mapped[bool] = mapped_column(default=False)
-    expired_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    expired_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
     def __str__(self):
         return f"User fullname={self.fullname}, telegram_id={self.tg_id})"
