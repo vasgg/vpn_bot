@@ -12,3 +12,4 @@ class MenuAction(StrEnum):
     CONNECT_VPN = auto()
     SHOW_LINKS = auto()
     CLOSE_LINKS = auto()
+    RENEW_LINKS = auto()

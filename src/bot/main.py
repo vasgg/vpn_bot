@@ -6,6 +6,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
+from pinkhash import PinkHash
 
 from bot.middlewares.auth_middleware import AuthMiddleware
 from database.database_connector import get_db

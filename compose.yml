@@ -20,6 +20,8 @@ services:
       postgres:
         condition: service_healthy
     restart: always
+    volumes:
+      - ./logs:/app/logs
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
       ADMIN_ID: ${ADMIN_ID}

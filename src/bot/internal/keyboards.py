@@ -37,7 +37,7 @@ def show_links_kb() -> InlineKeyboardMarkup:
 
 def close_links_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text="Connect VPN", callback_data=MenuCallbackFactory(action=MenuAction.CLOSE_LINKS))
+    kb.button(text="Close links", callback_data=MenuCallbackFactory(action=MenuAction.CLOSE_LINKS))
     return kb.as_markup()
 
 
@@ -45,6 +45,7 @@ def connect_vpn_kb(with_links: bool = False) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
     kb.button(text="Connect VPN", callback_data=MenuCallbackFactory(action=MenuAction.CONNECT_VPN))
     if with_links:
+        kb.button(text="Renew links", callback_data=MenuCallbackFactory(action=MenuAction.RENEW_LINKS))
         kb.button(text="Show links", callback_data=MenuCallbackFactory(action=MenuAction.SHOW_LINKS))
     kb.adjust(1)
     return kb.as_markup()

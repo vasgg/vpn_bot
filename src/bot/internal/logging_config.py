@@ -5,9 +5,8 @@ from pathlib import Path
 
 
 def setup_logs():
-    # TODO: всё круто, но без вольюма с кодом не дотянешься до логов (я пока не настроил)
     Path("logs").mkdir(parents=True, exist_ok=True)
-    logging_config = get_logging_config('bot')
+    logging_config = get_logging_config('vpn_bot')
     logging.config.dictConfig(logging_config)
 
 

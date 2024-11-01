@@ -12,9 +12,10 @@ from bot.internal.keyboards import connect_vpn_kb
 from bot.internal.dicts import goods, texts
 from bot.controllers.marzban import (
     create_marzban_user,
-    get_duration_string, get_marzban_token,
+    get_marzban_token,
     update_marzban_user_expiration,
 )
+from bot.controllers.helpers import compose_username, get_duration_string
 from database.models import Link, User
 
 router = Router()
@@ -33,11 +34,7 @@ async def on_successful_payment(
     user: User,
     db_session: AsyncSession,
 ):
-    username = (
-        '@' + message.from_user.username
-        if message.from_user.username
-        else message.from_user.full_name.replace(' ', '_')
-    )
+    username = compose_username(message)
     current_timestamp = int(datetime.now(UTC).timestamp())
     payload = message.successful_payment.invoice_payload
     if payload == SubscriptionPlan.ONE_WEEK_DEMO_ACCESS:
@@ -45,7 +42,9 @@ async def on_successful_payment(
     duration = goods[payload]['duration']
     marzban_token = await get_marzban_token()
     if not user.marzban_username:
-        new_marzban_user = await create_marzban_user(username, message.from_user.id, marzban_token, duration)
+        new_marzban_user = await create_marzban_user(
+            username=username, tg_id=message.from_user.id, token=marzban_token, duration=duration
+        )
         expire_timestamp = new_marzban_user.get("expire")
         expire_date = datetime.fromtimestamp(expire_timestamp)
         days_left = (expire_timestamp - current_timestamp) // (24 * 3600)
