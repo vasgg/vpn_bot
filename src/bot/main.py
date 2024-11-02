@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import run
 import logging
 
 from aiogram import Bot, Dispatcher
@@ -6,12 +6,13 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.client.session.aiohttp import AiohttpSession
 from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
-from pinkhash import PinkHash
+from sentry_sdk import init
 
+from bot.internal.enums import Stage
 from bot.middlewares.auth_middleware import AuthMiddleware
 from database.database_connector import get_db
-from bot.controllers.commands import set_bot_commands
-from bot.controllers.notify_admin import on_shutdown, on_startup
+from bot.internal.commands import set_bot_commands
+from bot.internal.notify_admin import on_shutdown, on_startup
 from bot.middlewares.session_middleware import DBSessionMiddleware
 from bot.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
 from bot.handlers.base_handlers import router as base_router
@@ -19,23 +20,27 @@ from bot.handlers.errors_handler import router as errors_router
 from bot.handlers.payment_handlers import router as payment_router
 from bot.internal.logging_config import setup_logs
 
-from bot.config import Settings
+from bot.config import settings
 
 
 async def main():
-    setup_logs()
+    setup_logs('vpn_bot')
 
-    settings = Settings()
+    if settings.bot.SENTRY_DSN and settings.bot.STAGE == Stage.PROD:
+        init(
+            dsn=settings.bot.SENTRY_DSN.get_secret_value(),
+            traces_sample_rate=1.0,
+            profiles_sample_rate=1.0,
+        )
 
     session = AiohttpSession(timeout=120)
 
     bot = Bot(
-        token=settings.BOT_TOKEN.get_secret_value(),
+        token=settings.bot.TOKEN.get_secret_value(),
         default=DefaultBotProperties(parse_mode=ParseMode.HTML),
         session=session,
     )
 
-    logging.info("bot started")
     storage = MemoryStorage()
 
     dispatcher = Dispatcher(storage=storage, settings=settings)
@@ -57,10 +62,11 @@ async def main():
     )
 
     await dispatcher.start_polling(bot)
+    logging.info("VPN bot started")
 
 
 def run_main():
-    asyncio.run(main())
+    run(main())
 
 
 if __name__ == '__main__':

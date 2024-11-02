@@ -12,14 +12,14 @@ logger = logging.getLogger(__name__)
 
 
 async def get_marzban_token() -> str:
-    url = f"{settings.MARZBAN_BASE_URL}/api/admin/token"
+    url = f"{settings.marzban.BASE_URL}/api/admin/token"
     headers = {
         "accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
     }
     data = {
-        "username": settings.MARZBAN_ADMIN,
-        "password": settings.MARZBAN_PASS.get_secret_value(),
+        "username": settings.marzban.ADMIN,
+        "password": settings.marzban.PASSWORD.get_secret_value(),
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, data=data)
@@ -31,7 +31,7 @@ async def get_marzban_token() -> str:
 async def create_marzban_user(
     username: str, tg_id: int, token: str, duration: relativedelta | None = None, expire: datetime | None = None
 ) -> dict:
-    url = f"{settings.MARZBAN_BASE_URL}/api/user"
+    url = f"{settings.marzban.BASE_URL}/api/user"
     if duration:
         expire_date = datetime.now(UTC) + duration
         expire_timestamp = int(expire_date.timestamp())
@@ -52,18 +52,15 @@ async def create_marzban_user(
         response = await client.post(url, headers=headers, json=data)
         try:
             response.raise_for_status()
-            logger.info(f"Server response: {response.json()}")
+            logger.info(f"Creating new Marzban user. Server response: {response.json()}")
             return response.json()
         except httpx.HTTPStatusError as e:
-            logger.exception(f"Server response with error: {response.json()}, error: {e}")
+            logger.exception(f"Creating new Marzban user. Server response with error: {response.json()}, error: {e}")
             raise
 
 
-async def refresh_marzban_user(): ...
-
-
 async def delete_marzban_user(username: str, token: str) -> dict:
-    url = f"{settings.MARZBAN_BASE_URL}/api/user/{username}"
+    url = f"{settings.marzban.BASE_URL}/api/user/{username}"
     headers = {
         "accept": "application/json",
         "Authorization": f"Bearer {token}",
@@ -73,14 +70,17 @@ async def delete_marzban_user(username: str, token: str) -> dict:
         response = await client.delete(url, headers=headers)
         try:
             response.raise_for_status()
+            logger.info(f"Deleting Marzban user: {username}. Server response: {response.json()}")
             return response.json()
         except httpx.HTTPStatusError as e:
-            logger.exception(f"Server response with error: {response.json()}, error: {e}")
+            logger.exception(
+                f"Deleting Marzban user: {username}. " f"Server response with error: {response.json()}, error: {e}"
+            )
             raise
 
 
 async def get_marzban_user(username: str, token: str) -> dict:
-    url = f"{settings.MARZBAN_BASE_URL}/api/user/{username}"
+    url = f"{settings.marzban.BASE_URL}/api/user/{username}"
     headers = {
         "accept": "application/json",
         "Authorization": f"Bearer {token}",
@@ -90,6 +90,7 @@ async def get_marzban_user(username: str, token: str) -> dict:
         response = await client.get(url, headers=headers)
         try:
             response.raise_for_status()
+            logger.info(f"Server response: {response.json()}")
             return response.json()
         except httpx.HTTPStatusError as e:
             logger.exception(f"Server response with error: {response.json()}, error: {e}")
@@ -99,7 +100,7 @@ async def get_marzban_user(username: str, token: str) -> dict:
 async def update_marzban_user_expiration(
     username: str, token: str, duration: relativedelta, user_expired_at: datetime
 ) -> dict:
-    url = f"{settings.MARZBAN_BASE_URL}/api/user/{username}"
+    url = f"{settings.marzban.BASE_URL}/api/user/{username}"
     now = datetime.now(UTC)
     if user_expired_at.tzinfo is None:
         user_expired_at = user_expired_at.replace(tzinfo=UTC)
@@ -119,8 +120,11 @@ async def update_marzban_user_expiration(
         response = await client.put(url, headers=headers, json=data)
         try:
             response.raise_for_status()
-            logger.info(f"Server response: {response.json()}")
+            logger.info(f"Updating Marzban user expiration for {username}. Server response: {response.json()}")
             return response.json()
         except httpx.HTTPStatusError as e:
-            logger.exception(f"Server response with error: {response.json()}, error: {e}")
+            logger.exception(
+                f"Updating Marzban user expiration for {username}. "
+                f"Server response with error: {response.json()}, error: {e}"
+            )
             raise

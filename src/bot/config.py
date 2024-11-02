@@ -1,21 +1,51 @@
+from dotenv import load_dotenv
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from bot.internal.enums import Stage
 
 
-class Settings(BaseSettings):
-    BOT_TOKEN: SecretStr
+class BotConfig(BaseSettings):
+    STAGE: Stage
     ADMIN_ID: int
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: SecretStr
-    POSTGRES_DB: str
-    POSTGRES_HOST: str
-    POSTGRES_PORT: int
-    MARZBAN_BASE_URL: str
-    MARZBAN_ADMIN: str
-    MARZBAN_PASS: SecretStr
+    TOKEN: SecretStr
+    SENTRY_DSN: SecretStr | None = None
+
+    model_config = SettingsConfigDict(env_prefix="BOT_")
+
+
+class DBConfig(BaseSettings):
+    USER: str
+    PASSWORD: SecretStr
+    NAME: str
+    HOST: str
+    PORT: int
     echo: bool = False
     pool_size: int = 50
     max_overflow: int = 10
+
+    model_config = SettingsConfigDict(env_prefix="DB_")
+
+    @property
+    def get_db_connection_string(self):
+        return SecretStr(
+            f"postgresql+asyncpg://"
+            f"{self.USER}:{self.PASSWORD.get_secret_value()}@"
+            f"{self.HOST}:{self.PORT}/{self.NAME}"
+        )
+
+
+class MarzbanConfig(BaseSettings):
+    BASE_URL: str
+    ADMIN: str
+    PASSWORD: SecretStr
+
+    model_config = SettingsConfigDict(env_prefix="MARZBAN_")
+
+
+class Settings(BaseSettings):
+    bot: BotConfig
+    db: DBConfig
+    marzban: MarzbanConfig
 
     model_config = SettingsConfigDict(
         env_file='.env',
@@ -24,13 +54,6 @@ class Settings(BaseSettings):
         extra='allow',
     )
 
-    @property
-    def get_db_connection_string(self):
-        return SecretStr(
-            f"postgresql+asyncpg://"
-            f"{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD.get_secret_value()}@"
-            f"{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
-        )
 
-
-settings = Settings()
+load_dotenv()
+settings = Settings(bot=BotConfig(), db=DBConfig(), marzban=MarzbanConfig())

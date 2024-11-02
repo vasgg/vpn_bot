@@ -14,7 +14,7 @@ from database.models import Base
 # access to the values within the .ini file in use.
 config = context.config
 
-DATABASE_URL = settings.get_db_connection_string.get_secret_value()
+DATABASE_URL = settings.db.get_db_connection_string.get_secret_value()
 config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # Interpret the config file for Python logging.
@@ -47,7 +47,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = settings.db_url
+    url = settings.db.get_db_connection_string.get_secret_value()
     context.configure(
         url=url,
         target_metadata=target_metadata,

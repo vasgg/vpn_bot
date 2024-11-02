@@ -3,10 +3,15 @@ import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+template = {
+    "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
+    "datefmt": "%d.%m.%Y %H:%M:%S%z",
+}
 
-def setup_logs():
+
+def setup_logs(app_name: str):
     Path("logs").mkdir(parents=True, exist_ok=True)
-    logging_config = get_logging_config('vpn_bot')
+    logging_config = get_logging_config(app_name)
     logging.config.dictConfig(logging_config)
 
 
@@ -15,14 +20,8 @@ def get_logging_config(app_name: str):
         "version": 1,
         "disable_existing_loggers": False,
         "formatters": {
-            "main": {
-                "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
-                "datefmt": "%d.%m.%Y %H:%M:%S%z",
-            },
-            "errors": {
-                "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
-                "datefmt": "%d.%m.%Y %H:%M:%S%z",
-            },
+            "main": template,
+            "errors": template,
         },
         "handlers": {
             "stdout": {

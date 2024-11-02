@@ -34,8 +34,8 @@ class DatabaseConnector:
 
 def get_db(settings) -> DatabaseConnector:
     return DatabaseConnector(
-        url=settings.get_db_connection_string.get_secret_value(),
-        echo=settings.echo,
-        pool_size=settings.pool_size,
-        max_overflow=settings.max_overflow,
+        url=settings.db.get_db_connection_string.get_secret_value(),
+        echo=settings.db.echo,
+        pool_size=settings.db.pool_size,
+        max_overflow=settings.db.max_overflow,
     )
