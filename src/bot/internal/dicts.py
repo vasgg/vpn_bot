@@ -4,43 +4,38 @@ from dateutil.relativedelta import relativedelta
 from bot.internal.enums import SubscriptionPlan
 
 texts = {
-    'no_subscription': 'Hello, {user_fullname}.\n\n'
-                       'User ID: <code>{user_id}</code>\n'
-                       '└ your status: <b>Inactive</b>\n',
-    'start_message': 'Hello, {user_fullname}.\n\nUser ID: <code>{user_id}</code>\n'
-                     '├ your status: <b>{status}</b>\n'
-                     '├ proxy type: <b>{proxy_type}</b>\n'
-                     '├ valid until: <b>{valid_until}</b>\n'
-                     '└ days left: <b>{days_left}</b>\n\n',
-    'user_created': 'You have been successfully registered, {user_fullname}.\n\n'
-                    'User ID: <code>{user_id}</code>\n'
-                    '├ your status: <b>Active</b>\n'
-                    '├ proxy type: <b>{proxy_type}</b>\n'
-                    '├ valid until: <b>{valid_until}</b>\n'
-                    '└ days left: <b>{days_left}</b>\n\n',
+    'inactive': 'VPN bot.\n\n'
+                'User ID: <code>{user_id}</code>\n'
+                '└ your status: <b>Inactive</b>\n',
+    'active': 'VPN bot.\n\n'
+              'User ID: <code>{user_id}</code>\n'
+              '├ your status: <b>Active</b>\n'
+              '├ proxy type: <b>VMess</b>\n'
+              '├ valid until: <b>{valid_until}</b>\n'
+              '└ days left: <b>{days_left}</b>\n\n',
+    'created': 'You have been successfully registered.\n\n'
+               'User ID: <code>{user_id}</code>\n'
+               '├ your status: <b>Active</b>\n'
+               '├ proxy type: <b>VMess</b>\n'
+               '├ valid until: <b>{valid_until}</b>\n'
+               '└ days left: <b>{days_left}</b>\n\n',
+    'renewed': 'Renewed your subscription.\n\n'
+               'User ID: <code>{user_id}</code>\n'
+               '├ your status: <b>Active</b>\n'
+               '├ proxy type: <b>VMess</b>\n'
+               '├ valid until: <b>{valid_until}</b>\n'
+               '└ days left: <b>{days_left}</b>\n\n',
+    'prolonged': 'Your subscription successfully prolonged.\n\n'
+                 'User ID: <code>{user_id}</code>\n'
+                 '├ your status: <b>Active</b>\n'
+                 '├ proxy type: <b>VMess</b>\n'
+                 '├ valid until: <b>{valid_until}</b>\n'
+                 '└ days left: <b>{days_left}</b>\n\n',
+    'choose_action': 'Add more time to your subscription.',
+    'choose_device': 'Choose a device:',
     'links_message': '<pre>{links}</pre>',
-    'user_not_expired': 'Hello, {user_fullname}.\n\n'
-                        'User ID: <code>{user_id}</code>\n'
-                        '├ your status: <b>Active</b>\n'
-                        '├ proxy type: <b>{proxy_type}</b>\n'
-                        '├ valid until: <b>{valid_until}</b>\n'
-                        '└ days left: <b>{days_left}</b>\n\n',
-    'renew_subscription': 'Reactivating your subscription by addind {added_time}.\n\n'
-                          'User ID: <code>{user_id}</code>\n'
-                          '├ your status: <b>Active</b>\n'
-                          '├ proxy type: <b>{proxy_type}</b>\n'
-                          '├ valid until: <b>{valid_until}</b>\n'
-                          '└ days left: <b>{days_left}</b>\n\n',
-    'prolong_subscription': 'Successfully added {added_time} to your subscription.\n\n'
-                            'User ID: <code>{user_id}</code>\n'
-                            '├ your status: <b>Active</b>\n'
-                            '├ proxy type: <b>{proxy_type}</b>\n'
-                            '├ valid until: <b>{valid_until}</b>\n'
-                            '└ days left: <b>{days_left}</b>\n\n',
-    'choose_action': 'Choose an option:',
-    'links_refreshed': 'Links have been successfully refreshed.',
+    'links_refreshed': 'Links successfully refreshed.',
 }
-
 
 goods = {
     SubscriptionPlan.ONE_WEEK_DEMO_ACCESS: {

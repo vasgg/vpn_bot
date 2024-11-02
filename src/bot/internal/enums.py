@@ -11,5 +11,26 @@ class SubscriptionPlan(StrEnum):
 class MenuAction(StrEnum):
     CONNECT_VPN = auto()
     SHOW_LINKS = auto()
-    CLOSE_LINKS = auto()
+    CLOSE = auto()
     RENEW_LINKS = auto()
+    SETUP_DEVICE = auto()
+    ACCOUNT = auto()
+    BACK_TO_MENU = auto()
+
+
+class DeviceType(StrEnum):
+    ANDROID = auto()
+    IOS = auto()
+
+
+class Stage(StrEnum):
+    DEV = auto()
+    PROD = auto()
+
+
+class SubscriptionStatus(StrEnum):
+    INACTIVE = auto()
+    ACTIVE = auto()
+    CREATED = auto()
+    RENEWED = auto()
+    PROLONGED = auto()
