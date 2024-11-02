@@ -5,15 +5,17 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import Result, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.controllers.helpers import compose_username
 from database.models import User
 
 logger = logging.getLogger(__name__)
 
 
 async def add_user_to_db(user, db_session: AsyncSession) -> User:
-    new_user = User(tg_id=user.id, fullname=user.full_name, username=user.username)
+    new_user = User(tg_id=user.id, fullname=user.full_name, username=compose_username(user))
     db_session.add(new_user)
     await db_session.flush()
+    logger.info(f"New user created: {new_user}")
     return new_user
 
 
@@ -22,12 +24,6 @@ async def get_user_from_db_by_tg_id(telegram_id: int, db_session: AsyncSession) 
     result: Result = await db_session.execute(query)
     user = result.scalar_one_or_none()
     return user
-
-
-async def get_all_users_ids(db_session: AsyncSession) -> list[User.tg_id]:
-    query = select(User.tg_id)
-    result = await db_session.execute(query)
-    return list(result.scalars().all())
 
 
 async def update_db_user_expiration(user: User, duration: relativedelta, db_session: AsyncSession):
