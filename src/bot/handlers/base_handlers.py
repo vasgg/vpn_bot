@@ -1,5 +1,6 @@
 from asyncio import sleep
 import contextlib
+from datetime import UTC
 
 from aiogram import Router
 from aiogram.exceptions import TelegramBadRequest
@@ -35,7 +36,7 @@ async def start(message: Message, user: User) -> None:
     if not user.marzban_username:
         text = compose_message(user, message, SubscriptionStatus.INACTIVE)
     else:
-        if user.expired_at > message.date:
+        if user.expired_at.replace(tzinfo=UTC) > message.date.replace(tzinfo=UTC):
             text = compose_message(user, message, SubscriptionStatus.ACTIVE)
             markup = connect_vpn_kb(active=True)
         else:

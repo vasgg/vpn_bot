@@ -1,3 +1,4 @@
+from datetime import UTC
 from math import ceil
 
 from aiogram.types import User, Message
@@ -42,5 +43,5 @@ def compose_message(user: DBUser, message: Message, status: SubscriptionStatus) 
             return texts[status].format(
                 user_id=user.tg_id,
                 valid_until=user.expired_at.strftime("%d.%m.%Y"),
-                days_left=ceil((user.expired_at - message.date).total_seconds() / (24 * 3600)),
+                days_left=ceil((user.expired_at.replace(tzinfo=UTC) - message.date.replace(tzinfo=UTC)).total_seconds() / (24 * 3600)),
             )

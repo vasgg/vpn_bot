@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import UTC, datetime
 import logging
 
 from aiogram import Bot, F, Router
@@ -49,7 +49,7 @@ async def on_successful_payment(
         expire_date = datetime.fromtimestamp(expire_timestamp)
         tcp_link, websocket_link, *_ = new_marzban_user.get("links")
         user.marzban_username = new_marzban_user.get("username")
-        user.expired_at = expire_date
+        user.expired_at = expire_date.replace(tzinfo=UTC)
         db_session.add_all(
             [
                 Link(user_tg_id=message.from_user.id, url=tcp_link),
@@ -61,7 +61,7 @@ async def on_successful_payment(
         await update_marzban_user_expiration(user.marzban_username, marzban_token, duration, user.expired_at)
         await update_db_user_expiration(user, duration, db_session)
 
-        if user.expired_at > message.date:
+        if user.expired_at.replace(tzinfo=UTC) > message.date.replace(tzinfo=UTC):
             text = compose_message(user, message, SubscriptionStatus.PROLONGED)
         else:
             text = compose_message(user, message, SubscriptionStatus.RENEWED)
