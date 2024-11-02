@@ -23,9 +23,14 @@ async def get_marzban_token() -> str:
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, data=data)
-        response.raise_for_status()
-        token_data = response.json()
-        return token_data.get("access_token")
+        try:
+            response.raise_for_status()
+            logger.info(f"Obtaining Marzban token. Server response: {response.json()}")
+            token_data = response.json()
+            return token_data.get("access_token")
+        except httpx.HTTPStatusError as e:
+            logger.exception(f"Obtaining Marzban token. Server response with error: {response.json()}, error: {e}")
+            raise
 
 
 async def create_marzban_user(
