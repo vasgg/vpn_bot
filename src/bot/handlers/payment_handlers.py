@@ -1,4 +1,5 @@
-from datetime import UTC, datetime
+from datetime import datetime
+import logging
 
 from aiogram import Bot, F, Router
 from aiogram.exceptions import TelegramBadRequest
@@ -7,18 +8,19 @@ from aiogram.types import Message, PreCheckoutQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.controllers.crud.user import update_db_user_expiration
-from bot.internal.enums import SubscriptionPlan
+from bot.internal.enums import SubscriptionPlan, SubscriptionStatus
 from bot.internal.keyboards import connect_vpn_kb
-from bot.internal.dicts import goods, texts
+from bot.internal.dicts import goods
 from bot.controllers.marzban import (
     create_marzban_user,
     get_marzban_token,
     update_marzban_user_expiration,
 )
-from bot.controllers.helpers import compose_username, get_duration_string
+from bot.controllers.helpers import compose_message
 from database.models import Link, User
 
 router = Router()
+logger = logging.getLogger(__name__)
 
 
 @router.pre_checkout_query()
@@ -34,8 +36,6 @@ async def on_successful_payment(
     user: User,
     db_session: AsyncSession,
 ):
-    username = compose_username(message)
-    current_timestamp = int(datetime.now(UTC).timestamp())
     payload = message.successful_payment.invoice_payload
     if payload == SubscriptionPlan.ONE_WEEK_DEMO_ACCESS:
         user.demo_access_used = True
@@ -43,11 +43,10 @@ async def on_successful_payment(
     marzban_token = await get_marzban_token()
     if not user.marzban_username:
         new_marzban_user = await create_marzban_user(
-            username=username, tg_id=message.from_user.id, token=marzban_token, duration=duration
+            username=user.username, tg_id=message.from_user.id, token=marzban_token, duration=duration
         )
         expire_timestamp = new_marzban_user.get("expire")
         expire_date = datetime.fromtimestamp(expire_timestamp)
-        days_left = (expire_timestamp - current_timestamp) // (24 * 3600)
         tcp_link, websocket_link, *_ = new_marzban_user.get("links")
         user.marzban_username = new_marzban_user.get("username")
         user.expired_at = expire_date
@@ -57,43 +56,27 @@ async def on_successful_payment(
                 Link(user_tg_id=message.from_user.id, url=websocket_link),
             ]
         )
-        text = texts['user_created'].format(
-            user_fullname=message.from_user.full_name,
-            user_id=message.from_user.id,
-            proxy_type='VMess',
-            valid_until=expire_date.strftime("%d.%m.%Y"),
-            days_left=days_left,
-        )
+        text = compose_message(user, message, SubscriptionStatus.CREATED)
     else:
         await update_marzban_user_expiration(user.marzban_username, marzban_token, duration, user.expired_at)
         await update_db_user_expiration(user, duration, db_session)
 
         if user.expired_at > message.date:
-            text = texts['prolong_subscription'].format(
-                added_time=get_duration_string(duration),
-                user_id=message.from_user.id,
-                proxy_type='VMess',
-                valid_until=user.expired_at.strftime("%d.%m.%Y"),
-                days_left=(user.expired_at - message.date).days,
-            )
+            text = compose_message(user, message, SubscriptionStatus.PROLONGED)
         else:
-            text = texts['renew_subscription'].format(
-                added_time=get_duration_string(duration),
-                user_id=message.from_user.id,
-                proxy_type='VMess',
-                valid_until=user.expired_at.strftime("%d.%m.%Y"),
-                days_left=(user.expired_at - message.date).days,
-            )
+            text = compose_message(user, message, SubscriptionStatus.RENEWED)
     await message.answer(
         text=text,
-        reply_markup=connect_vpn_kb(with_links=True),
+        reply_markup=connect_vpn_kb(active=True),
     )
+    logger.info(f"Successful payment for user {user.username}: {message.successful_payment.invoice_payload}")
 
 
 @router.message(Command("refund"))
 async def cmd_refund(
     message: Message,
     bot: Bot,
+    user: User,
     command: CommandObject,
 ):
     transaction_id = command.args
@@ -103,6 +86,7 @@ async def cmd_refund(
     try:
         await bot.refund_star_payment(user_id=message.from_user.id, telegram_payment_charge_id=transaction_id)
         await message.answer("Refund successful")
+        logger.info(f"Refund for user {user.username} successful: {transaction_id}")
     except TelegramBadRequest as error:
         if "CHARGE_NOT_FOUND" in error.message:
             text = "Refund code not found"
@@ -111,4 +95,5 @@ async def cmd_refund(
         else:
             text = "Refund code not found"
         await message.answer(text)
+        logger.exception(error.message)
         return
