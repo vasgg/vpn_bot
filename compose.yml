@@ -2,13 +2,13 @@ services:
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_USER: ${DB_USER}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -27,9 +27,9 @@ services:
       BOT_ADMIN_ID: ${BOT_ADMIN_ID}
       BOT_SENTRY_DSN: ${BOT_SENTRY_DSN}
       BOT_STAGE: ${BOT_STAGE}
-      DB_USER: ${}
-      DB_PASSWORD: ${}
-      DB_NAME: ${}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       MARZBAN_BASE_URL: ${MARZBAN_BASE_URL}
