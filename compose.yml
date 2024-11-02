@@ -2,9 +2,10 @@ services:
   postgres:
     image: postgres:17
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -24,12 +25,17 @@ services:
       - ./logs:/app/logs
     environment:
       BOT_TOKEN: ${BOT_TOKEN}
-      ADMIN_ID: ${ADMIN_ID}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_HOST: ${POSTGRES_HOST}
-      POSTGRES_PORT: ${POSTGRES_PORT}
+      BOT_ADMIN_ID: ${BOT_ADMIN_ID}
+      BOT_SENTRY_DSN: ${BOT_SENTRY_DSN}
+      BOT_STAGE: ${BOT_STAGE}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      MARZBAN_BASE_URL: ${MARZBAN_BASE_URL}
+      MARZBAN_ADMIN: ${MARZBAN_ADMIN}
+      MARZBAN_PASSWORD=: ${MARZBAN_PASSWORD}
 
 volumes:
   pgdata:
