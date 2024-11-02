@@ -12,7 +12,7 @@ def buy_subscription_kb(demo_access_used: bool) -> InlineKeyboardMarkup:
         ("1 month", SubscriptionCallbackFactory(plan=SubscriptionPlan.ONE_MONTH_SUBSCRIPTION)),
         ("6 months", SubscriptionCallbackFactory(plan=SubscriptionPlan.SIX_MONTH_SUBSCRIPTION)),
         ("1 year", SubscriptionCallbackFactory(plan=SubscriptionPlan.ONE_YEAR_SUBSCRIPTION)),
-        ("Back", MenuCallbackFactory(action=MenuAction.BACK_TO_MENU)),
+        # ("Back", MenuCallbackFactory(action=MenuAction.BACK_TO_MENU)),
     ]
     if demo_access_used:
         del buttons[0]
