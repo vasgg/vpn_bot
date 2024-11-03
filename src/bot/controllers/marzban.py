@@ -21,6 +21,8 @@ async def get_marzban_token() -> str:
         "username": settings.marzban.ADMIN,
         "password": settings.marzban.PASSWORD.get_secret_value(),
     }
+    logger.info(f"Data: {data}")
+    logger.info(f"Headers: {headers}")
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, data=data)
         try:
