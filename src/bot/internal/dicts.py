@@ -31,7 +31,7 @@ texts = {
                  '├ proxy type: <b>VMess</b>\n'
                  '├ valid until: <b>{valid_until}</b>\n'
                  '└ days left: <b>{days_left}</b>\n\n',
-    'choose_action': 'Add more time to your subscription.',
+    'choose_action': 'Add more time to your access.',
     'choose_device': 'Choose a device:',
     'links_message': '<pre>{links}</pre>',
     'links_refreshed': 'Links successfully refreshed.',

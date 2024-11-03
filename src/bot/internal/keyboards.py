@@ -38,7 +38,7 @@ def close_kb() -> InlineKeyboardMarkup:
 
 def connect_vpn_kb(active: bool = False) -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text="Connect VPN", callback_data=MenuCallbackFactory(action=MenuAction.CONNECT_VPN))
+    kb.button(text="Buy access", callback_data=MenuCallbackFactory(action=MenuAction.CONNECT_VPN))
     if active:
         kb.button(text="Account", callback_data=MenuCallbackFactory(action=MenuAction.ACCOUNT))
     kb.adjust(1)
