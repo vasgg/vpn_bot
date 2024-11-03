@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 from pydantic import SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from bot.internal.enums import Stage
@@ -10,7 +9,11 @@ class BotConfig(BaseSettings):
     TOKEN: SecretStr
     SENTRY_DSN: SecretStr | None = None
 
-    model_config = SettingsConfigDict(env_prefix="BOT_")
+    model_config = SettingsConfigDict(
+        env_prefix="BOT_",
+        env_file='.env',
+        extra='allow',
+    )
 
 
 class DBConfig(BaseSettings):
@@ -23,7 +26,11 @@ class DBConfig(BaseSettings):
     pool_size: int = 50
     max_overflow: int = 10
 
-    model_config = SettingsConfigDict(env_prefix="DB_")
+    model_config = SettingsConfigDict(
+        env_prefix="DB_",
+        env_file='.env',
+        extra='allow',
+    )
 
     @property
     def get_db_connection_string(self):
@@ -39,7 +46,11 @@ class MarzbanConfig(BaseSettings):
     ADMIN: str
     PASSWORD: SecretStr
 
-    model_config = SettingsConfigDict(env_prefix="MARZBAN_")
+    model_config = SettingsConfigDict(
+        env_prefix="MARZBAN_",
+        env_file='.env',
+        extra='allow',
+    )
 
 
 class Settings(BaseSettings):
@@ -55,5 +66,4 @@ class Settings(BaseSettings):
     )
 
 
-load_dotenv()
 settings = Settings(bot=BotConfig(), db=DBConfig(), marzban=MarzbanConfig())

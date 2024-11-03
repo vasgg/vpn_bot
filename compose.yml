@@ -8,7 +8,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -22,20 +22,6 @@ services:
     restart: always
     volumes:
       - ./logs:/app/logs
-    environment:
-      BOT_TOKEN: ${BOT_TOKEN}
-      BOT_ADMIN_ID: ${BOT_ADMIN_ID}
-      BOT_SENTRY_DSN: ${BOT_SENTRY_DSN}
-      BOT_STAGE: ${BOT_STAGE}
-      DB_USER: ${DB_USER}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      MARZBAN_BASE_URL: ${MARZBAN_BASE_URL}
-      MARZBAN_ADMIN: ${MARZBAN_ADMIN}
-      MARZBAN_PASSWORD=: ${MARZBAN_PASSWORD}
-
 volumes:
   pgdata:
 
