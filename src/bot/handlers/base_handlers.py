@@ -4,16 +4,14 @@ from datetime import UTC
 
 from aiogram import Router
 from aiogram.exceptions import TelegramBadRequest
-from aiogram.filters import (
-    CommandStart,
-)
+from aiogram.filters import CommandStart
 from aiogram.types import CallbackQuery, LabeledPrice, Message
 from aiogram.utils.chat_action import ChatActionSender
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.controllers.crud.link import get_links_by_user_id, logger, update_links_url
 from bot.controllers.marzban import create_marzban_user, delete_marzban_user, get_marzban_token
-from bot.controllers.helpers import compose_message, get_duration_string
+from bot.internal.helpers import compose_message, get_duration_string
 from bot.internal.enums import DeviceType, MenuAction, SubscriptionStatus
 from bot.internal.keyboards import (
     account_kb,
@@ -21,7 +19,7 @@ from bot.internal.keyboards import (
     choose_device_kb,
     close_kb,
     connect_vpn_kb,
-    show_links_kb,
+    help_menu_kb, show_links_kb,
 )
 from bot.internal.callbacks import DeviceCallbackFactory, MenuCallbackFactory, SubscriptionCallbackFactory
 from bot.internal.dicts import goods, texts
@@ -70,9 +68,11 @@ async def handle_menu_actions(
     callback: CallbackQuery,
     callback_data: MenuCallbackFactory,
     user: User,
+    user_active: bool,
     db_session: AsyncSession,
 ) -> None:
     await callback.answer()
+    user_status = SubscriptionStatus.ACTIVE if user_active else SubscriptionStatus.INACTIVE
     with contextlib.suppress(TelegramBadRequest):
         match callback_data.action:
             case MenuAction.SHOW_LINKS:
@@ -85,7 +85,7 @@ async def handle_menu_actions(
                 await callback.message.delete()
             case MenuAction.CONNECT_VPN:
                 await callback.message.edit_text(
-                    texts['choose_action'],
+                    texts['choose_plan'],
                     reply_markup=buy_subscription_kb(user.demo_access_used),
                 )
                 logger.info(f"Connect VPN button pressed by user {user.username}")
@@ -109,7 +109,7 @@ async def handle_menu_actions(
                 await callback.message.edit_text(texts['choose_device'], reply_markup=choose_device_kb())
                 logger.info(f"Setup device button pressed by user {user.username}")
             case MenuAction.ACCOUNT:
-                text = compose_message(user, callback.message, SubscriptionStatus.ACTIVE)
+                text = compose_message(user, callback.message, user_status)
                 await callback.message.edit_text(text, reply_markup=account_kb())
             case MenuAction.BACK_TO_MENU:
                 text = compose_message(user, callback.message, SubscriptionStatus.ACTIVE)
@@ -119,6 +119,10 @@ async def handle_menu_actions(
                     logger.exception(e)
                     await callback.message.answer(text, reply_markup=connect_vpn_kb(active=True))
                 logger.info(f"Back to menu button pressed by user {user.username}")
+            case MenuAction.HELP:
+                await callback.message.edit_text(texts['help'].format(user_id=user.tg_id), reply_markup=help_menu_kb())
+            case MenuAction.CONTACT_SUPPORT:
+                await callback.message.answer(texts['support'], reply_markup=close_kb())
 
 
 @router.callback_query(DeviceCallbackFactory.filter())
