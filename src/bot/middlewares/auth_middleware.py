@@ -1,3 +1,4 @@
+from datetime import UTC, datetime
 from typing import Any, Awaitable, Callable, Dict
 
 from aiogram import BaseMiddleware
@@ -17,5 +18,7 @@ class AuthMiddleware(BaseMiddleware):
         user = await get_user_from_db_by_tg_id(event.from_user.id, db_session)
         if not user:
             user = await add_user_to_db(event.from_user, db_session)
+        user_active = user.expired_at and user.expired_at.replace(tzinfo=UTC) > datetime.now(UTC)
         data['user'] = user
+        data['user_active'] = user_active
         return await handler(event, data)
