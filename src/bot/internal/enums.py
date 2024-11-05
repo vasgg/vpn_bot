@@ -16,6 +16,8 @@ class MenuAction(StrEnum):
     SETUP_DEVICE = auto()
     ACCOUNT = auto()
     BACK_TO_MENU = auto()
+    HELP = auto()
+    CONTACT_SUPPORT = auto()
 
 
 class DeviceType(StrEnum):

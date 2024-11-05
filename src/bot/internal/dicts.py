@@ -4,10 +4,10 @@ from dateutil.relativedelta import relativedelta
 from bot.internal.enums import SubscriptionPlan
 
 texts = {
-    'inactive': 'VPN bot.\n\n'
+    'inactive': 'Mega VPN.\n\n'
                 'User ID: <code>{user_id}</code>\n'
                 '└ your status: <b>Inactive</b>\n',
-    'active': 'VPN bot.\n\n'
+    'active': 'Mega VPN.\n\n'
               'User ID: <code>{user_id}</code>\n'
               '├ your status: <b>Active</b>\n'
               '├ proxy type: <b>VMess</b>\n'
@@ -31,10 +31,14 @@ texts = {
                  '├ proxy type: <b>VMess</b>\n'
                  '├ valid until: <b>{valid_until}</b>\n'
                  '└ days left: <b>{days_left}</b>\n\n',
-    'choose_action': 'Add more time to your access.',
+    'help': 'Mega VPN bot help.\n\n'
+            'User ID: <code>{user_id}</code>\n',
+    'choose_plan': 'Add more time to your access.',
+    'choose_option': 'Choose an action:',
     'choose_device': 'Choose a device:',
     'links_message': '<pre>{links}</pre>',
     'links_refreshed': 'Links successfully refreshed.',
+    'support': 'You can contact support by sending a message to @honeybadger367',
 }
 
 goods = {
