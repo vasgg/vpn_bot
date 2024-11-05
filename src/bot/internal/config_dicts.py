@@ -3,6 +3,8 @@ import sys
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
+from pydantic_settings import SettingsConfigDict
+
 template = {
     "format": "%(asctime)s.%(msecs)03d [%(levelname)8s] [%(module)s:%(funcName)s:%(lineno)d] %(message)s",
     "datefmt": "%d.%m.%Y %H:%M:%S%z",
@@ -53,3 +55,13 @@ def get_logging_config(app_name: str):
             },
         },
     }
+
+
+def assign_config_dict(prefix: str = "") -> SettingsConfigDict:
+    return SettingsConfigDict(
+        env_prefix=prefix,
+        env_file='.env',
+        env_file_encoding='utf-8',
+        case_sensitive=False,
+        extra='allow'
+    )

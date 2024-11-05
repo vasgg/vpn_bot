@@ -18,7 +18,7 @@ from bot.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
 from bot.handlers.base_handlers import router as base_router
 from bot.handlers.errors_handler import router as errors_router
 from bot.handlers.payment_handlers import router as payment_router
-from bot.internal.logging_config import setup_logs
+from bot.internal.config_dicts import setup_logs
 
 from bot.config import settings
 

@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 import httpx
 
 from bot.config import settings
-from bot.controllers.helpers import pink_convert
+from bot.internal.helpers import pink_convert
 
 logger = logging.getLogger(__name__)
 

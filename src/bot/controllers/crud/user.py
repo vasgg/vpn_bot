@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from sqlalchemy import Result, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.controllers.helpers import compose_username
+from bot.internal.helpers import compose_username
 from database.models import User
 
 logger = logging.getLogger(__name__)

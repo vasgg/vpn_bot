@@ -14,7 +14,7 @@ async def on_startup(bot: Bot):
     folder = os.path.basename(os.getcwd())
     try:
         await bot.send_message(
-            settings.bot.ADMIN_ID,
+            settings.bot.ADMINS[0],
             f'<b>{folder.replace("_", " ")} started</b>\n\n/start',
             disable_notification=True,
         )
@@ -29,7 +29,7 @@ async def on_shutdown(bot: Bot, queue: Queue, task: Task, event: asyncio.Event):
     folder = os.path.basename(os.getcwd())
     try:
         await bot.send_message(
-            settings.bot.ADMIN_ID,
+            settings.bot.ADMINS[0],
             f'<b>{folder.replace("_", " ")} shutdown</b>',
             disable_notification=True,
         )
