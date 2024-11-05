@@ -7,6 +7,7 @@ from aiogram.filters import Command, CommandObject
 from aiogram.types import Message, PreCheckoutQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.config import settings
 from bot.controllers.crud.user import update_db_user_expiration
 from bot.internal.enums import SubscriptionPlan, SubscriptionStatus
 from bot.internal.keyboards import connect_vpn_kb
@@ -16,7 +17,7 @@ from bot.controllers.marzban import (
     get_marzban_token,
     update_marzban_user_expiration,
 )
-from bot.controllers.helpers import compose_message
+from bot.internal.helpers import compose_message
 from database.models import Link, User
 
 router = Router()
@@ -79,6 +80,8 @@ async def cmd_refund(
     user: User,
     command: CommandObject,
 ):
+    if message.from_user.id not in settings.bot.ADMINS:
+        return
     transaction_id = command.args
     if transaction_id is None:
         await message.answer("No refund code provided")
