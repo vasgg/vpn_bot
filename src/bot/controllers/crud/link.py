@@ -11,9 +11,9 @@ logger = logging.getLogger(__name__)
 async def get_links_by_user_id(user_tg_id: int, db_session: AsyncSession) -> list[Link]:
     query = select(Link).filter(Link.user_tg_id == user_tg_id)
     result: Result = await db_session.execute(query)
-    links = result.scalars()
-    logger.info(f"Loaded links for user {user_tg_id}: {links}")
-    return list(links)
+    links = list(result.scalars())
+    logger.info(f"Loaded links for user {user_tg_id}: {links=}, length: {len(links)}")
+    return links
 
 
 async def update_links_url(user_tg_id: int, new_urls: list[str], db_session: AsyncSession):

@@ -1,12 +1,18 @@
+from asyncio import sleep
 from datetime import UTC, datetime
 import logging
 from uuid import uuid4
 
+from aiogram.types import Message
+from aiogram.utils.chat_action import ChatActionSender
 from dateutil.relativedelta import relativedelta
 import httpx
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from bot.config import settings
+from bot.controllers.crud.link import update_links_url
 from bot.internal.helpers import pink_convert
+from database.models import User
 
 logger = logging.getLogger(__name__)
 
@@ -135,3 +141,20 @@ async def update_marzban_user_expiration(
                 f"Server response with error: {response.json()}, error: {e}"
             )
             raise
+
+
+async def renew_links(message: Message, user: User, db_session: AsyncSession):
+    async with ChatActionSender.typing(bot=message.bot, chat_id=message.from_user.id):
+        marzban_token = await get_marzban_token()
+        await delete_marzban_user(user.marzban_username, marzban_token)
+        await sleep(2)
+        marzban_token = await get_marzban_token()
+        new_marzban_user = await create_marzban_user(
+            username=user.username,
+            tg_id=message.from_user.id,
+            token=marzban_token,
+            expire=user.expired_at,
+        )
+        user.marzban_username = new_marzban_user.get("username")
+        tcp_link, websocket_link, *_ = new_marzban_user.get("links")
+        await update_links_url(user.tg_id, [tcp_link, websocket_link], db_session)
