@@ -110,7 +110,9 @@ async def handle_help_menu_actions(
             case HelpMenuAction.CONTACT_SUPPORT:
                 await callback.message.edit_text(texts['support'], reply_markup=back_to_help_kb())
             case HelpMenuAction.VPN_NOT_WORKING:
-                await callback.message.edit_text(texts['vpn_not_working'], reply_markup=back_to_help_kb(setup_device=True))
+                await callback.message.edit_text(
+                    texts['vpn_not_working'], reply_markup=back_to_help_kb(setup_device=True)
+                )
             case HelpMenuAction.STARS:
                 await callback.message.edit_text(texts['stars'], reply_markup=back_to_help_kb())
             case HelpMenuAction.LOW_SPEED:

@@ -1,9 +1,8 @@
 from aiogram.types import InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from bot.internal.callbacks import DeviceCallbackFactory, HelpCallbackFactory, MenuCallbackFactory, \
-    SubscriptionCallbackFactory
-from bot.internal.enums import DeviceType, HelpMenuAction, MainMenuAction, SubscriptionPlan
+from bot.internal.callbacks import HelpCallbackFactory, MenuCallbackFactory, SubscriptionCallbackFactory
+from bot.internal.enums import HelpMenuAction, MainMenuAction, SubscriptionPlan
 
 
 class MenuButton:
