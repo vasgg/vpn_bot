@@ -8,16 +8,23 @@ class SubscriptionPlan(StrEnum):
     ONE_YEAR_SUBSCRIPTION = auto()
 
 
-class MenuAction(StrEnum):
+class MainMenuAction(StrEnum):
     CONNECT_VPN = auto()
     SHOW_LINKS = auto()
-    CLOSE = auto()
     RENEW_LINKS = auto()
-    SETUP_DEVICE = auto()
     ACCOUNT = auto()
-    BACK_TO_MENU = auto()
     HELP = auto()
+    CLOSE = auto()
+    BACK_TO_MENU = auto()
+
+
+class HelpMenuAction(StrEnum):
+    SETUP_DEVICE = auto()
     CONTACT_SUPPORT = auto()
+    VPN_NOT_WORKING = auto()
+    STARS = auto()
+    LOW_SPEED = auto()
+    BACK_TO_HELP = auto()
 
 
 class DeviceType(StrEnum):

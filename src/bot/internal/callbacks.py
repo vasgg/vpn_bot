@@ -1,6 +1,6 @@
 from aiogram.filters.callback_data import CallbackData
 
-from bot.internal.enums import DeviceType, MenuAction, SubscriptionPlan
+from bot.internal.enums import DeviceType, HelpMenuAction, MainMenuAction, SubscriptionPlan
 
 
 class SubscriptionCallbackFactory(CallbackData, prefix='subscription'):
@@ -8,7 +8,11 @@ class SubscriptionCallbackFactory(CallbackData, prefix='subscription'):
 
 
 class MenuCallbackFactory(CallbackData, prefix='menu'):
-    action: MenuAction
+    action: MainMenuAction
+
+
+class HelpCallbackFactory(CallbackData, prefix='help'):
+    action: HelpMenuAction
 
 
 class DeviceCallbackFactory(CallbackData, prefix='device'):

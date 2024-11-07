@@ -39,13 +39,11 @@ def compose_message(user: DBUser, message: Message, status: SubscriptionStatus) 
         return texts[SubscriptionStatus.INACTIVE].format(
             user_id=message.from_user.id,
         )
-    days_left_float = (user.expired_at.replace(tzinfo=UTC) - message.date.replace(
-        tzinfo=UTC)).total_seconds() / (24 * 3600)
-    days_left = ceil(days_left_float) if days_left_float > floor(days_left_float) + 0.8 else floor(
-        days_left_float)
+    days_left_float = (user.expired_at.replace(tzinfo=UTC) - message.date.replace(tzinfo=UTC)).total_seconds() / (
+        24 * 3600
+    )
+    days_left = ceil(days_left_float) if days_left_float > floor(days_left_float) + 0.8 else floor(days_left_float)
 
     return texts[status].format(
-        user_id=user.tg_id,
-        valid_until=user.expired_at.strftime("%d.%m.%Y"),
-        days_left=days_left
+        user_id=user.tg_id, valid_until=user.expired_at.strftime("%d.%m.%Y"), days_left=days_left
     )

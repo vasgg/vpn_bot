@@ -59,9 +59,5 @@ def get_logging_config(app_name: str):
 
 def assign_config_dict(prefix: str = "") -> SettingsConfigDict:
     return SettingsConfigDict(
-        env_prefix=prefix,
-        env_file='.env',
-        env_file_encoding='utf-8',
-        case_sensitive=False,
-        extra='allow'
+        env_prefix=prefix, env_file='.env', env_file_encoding='utf-8', case_sensitive=False, extra='allow'
     )
