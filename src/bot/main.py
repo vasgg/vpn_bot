@@ -15,7 +15,8 @@ from bot.internal.commands import set_bot_commands
 from bot.internal.notify_admin import on_shutdown, on_startup
 from bot.middlewares.session_middleware import DBSessionMiddleware
 from bot.middlewares.updates_dumper_middleware import UpdatesDumperMiddleware
-from bot.handlers.base_handlers import router as base_router
+from bot.handlers.callbacks_handlers import router as callbacks_router
+from bot.handlers.commands_handler import router as commands_router
 from bot.handlers.errors_handler import router as errors_router
 from bot.handlers.payment_handlers import router as payment_router
 from bot.internal.config_dicts import setup_logs
@@ -56,7 +57,8 @@ async def main():
     dispatcher.message.middleware(AuthMiddleware())
     dispatcher.callback_query.middleware(AuthMiddleware())
     dispatcher.include_routers(
-        base_router,
+        commands_router,
+        callbacks_router,
         errors_router,
         payment_router,
     )
