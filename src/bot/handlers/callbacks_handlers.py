@@ -66,8 +66,6 @@ async def handle_menu_actions(
                     texts['links_message'].format(links='\n\n'.join(i.url for i in links)), reply_markup=close_kb()
                 )
                 logger.info(f"Links button pressed by user {user.username}")
-            case MainMenuAction.CLOSE:
-                await callback.message.delete()
             case MainMenuAction.CONNECT_VPN:
                 await callback.message.edit_text(
                     texts['choose_plan'],
@@ -81,6 +79,7 @@ async def handle_menu_actions(
             case MainMenuAction.ACCOUNT:
                 text = compose_message(user, callback.message, user_status)
                 await callback.message.edit_text(text, reply_markup=account_kb())
+                logger.info(f"Account button pressed by user {user.username}")
             case MainMenuAction.BACK_TO_MENU:
                 text = compose_message(user, callback.message, user_status)
                 try:
@@ -91,6 +90,9 @@ async def handle_menu_actions(
                 logger.info(f"Back to menu button pressed by user {user.username}")
             case MainMenuAction.HELP:
                 await callback.message.edit_text(texts['help'].format(user_id=user.tg_id), reply_markup=help_menu_kb())
+                logger.info(f"Help button pressed by user {user.username}")
+            case MainMenuAction.CLOSE:
+                await callback.message.delete()
 
 
 @router.callback_query(HelpCallbackFactory.filter())
