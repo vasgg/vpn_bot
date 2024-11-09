@@ -49,7 +49,7 @@ async def on_successful_payment(
             tg_id=message.from_user.id,
             token=marzban_token,
             settings=settings,
-            duration=duration
+            duration=duration,
         )
         expire_timestamp = new_marzban_user.get("expire")
         expire_date = datetime.fromtimestamp(expire_timestamp)
@@ -64,7 +64,7 @@ async def on_successful_payment(
         )
         text = compose_message(user, message, SubscriptionStatus.CREATED)
     else:
-        await update_marzban_user_expiration(user.marzban_username, marzban_token, duration, user.expired_at)
+        await update_marzban_user_expiration(user.marzban_username, marzban_token, settings, duration, user.expired_at)
         await update_db_user_expiration(user, duration, db_session)
 
         if user.expired_at.replace(tzinfo=UTC) > message.date.replace(tzinfo=UTC):

@@ -47,7 +47,7 @@ async def create_marzban_user(
     token: str,
     settings: Settings,
     duration: relativedelta | None = None,
-    expire: datetime | None = None
+    expire: datetime | None = None,
 ) -> dict:
     url = f"{settings.marzban.BASE_URL}/api/user"
     if duration:
@@ -77,7 +77,7 @@ async def create_marzban_user(
             raise
 
 
-async def delete_marzban_user(username: str, token: str) -> dict:
+async def delete_marzban_user(username: str, token: str, settings: Settings) -> dict:
     url = f"{settings.marzban.BASE_URL}/api/user/{username}"
     headers = {
         "accept": "application/json",
@@ -97,7 +97,7 @@ async def delete_marzban_user(username: str, token: str) -> dict:
             raise
 
 
-async def get_marzban_user(username: str, token: str) -> dict:
+async def get_marzban_user(username: str, token: str, settings: Settings) -> dict:
     url = f"{settings.marzban.BASE_URL}/api/user/{username}"
     headers = {
         "accept": "application/json",
@@ -116,7 +116,11 @@ async def get_marzban_user(username: str, token: str) -> dict:
 
 
 async def update_marzban_user_expiration(
-    username: str, token: str, duration: relativedelta, user_expired_at: datetime
+    username: str,
+    token: str,
+    settings: Settings,
+    duration: relativedelta,
+    user_expired_at: datetime,
 ) -> dict:
     url = f"{settings.marzban.BASE_URL}/api/user/{username}"
     now = datetime.now(UTC)
@@ -150,8 +154,8 @@ async def update_marzban_user_expiration(
 
 async def renew_links(message: Message, user: User, settings: Settings, db_session: AsyncSession):
     async with ChatActionSender.typing(bot=message.bot, chat_id=message.from_user.id):
-        marzban_token = await get_marzban_token(settings=settings)
-        await delete_marzban_user(user.marzban_username, marzban_token)
+        marzban_token = await get_marzban_token(settings)
+        await delete_marzban_user(user.marzban_username, marzban_token, settings)
         await sleep(2)
         new_marzban_user = await create_marzban_user(
             username=user.username,

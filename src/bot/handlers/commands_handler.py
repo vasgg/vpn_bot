@@ -5,6 +5,7 @@ from aiogram.filters import Command, CommandObject
 from aiogram.types import Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.config import Settings
 from bot.controllers.crud.link import logger
 from bot.controllers.marzban import renew_links
 from bot.internal.helpers import compose_message
@@ -25,7 +26,12 @@ router = Router()
 
 @router.message(Command("start", "connect_vpn", "renew_links", "account", "help"))
 async def command_handler(
-    message: Message, command: CommandObject, user: User, user_active: bool, db_session: AsyncSession
+    message: Message,
+    command: CommandObject,
+    user: User,
+    settings: Settings,
+    user_active: bool,
+    db_session: AsyncSession,
 ) -> None:
     match command.command:
         case "start":
@@ -44,7 +50,7 @@ async def command_handler(
             markup = buy_subscription_kb(user.demo_access_used)
             logger.info(f"Connect VPN command called by user {user.username}")
         case "renew_links":
-            await renew_links(message, user, db_session)
+            await renew_links(message, user, settings, db_session)
             text = texts['links_refreshed']
             markup = show_links_kb()
             logger.info(f"Renew links command called by user {user.username}")

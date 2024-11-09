@@ -2,9 +2,9 @@ import asyncio
 
 from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession
 
+from bot.config import Settings
 from database.database_connector import get_db
 from database.models import Base
-from bot.config import settings
 
 
 async def create_or_drop_db(engine: AsyncEngine, create: bool = True):
@@ -22,6 +22,7 @@ async def populate_db(db_session: AsyncSession):
 
 
 async def main():
+    settings = Settings()
     db = get_db(settings)
     await create_or_drop_db(db.engine, False)
     await create_or_drop_db(db.engine)
