@@ -5,6 +5,7 @@ from aiogram.exceptions import TelegramBadRequest
 from aiogram.types import CallbackQuery, LabeledPrice
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from bot.config import Settings
 from bot.controllers.crud.link import get_links_by_user_id, logger
 from bot.controllers.marzban import renew_links
 from bot.internal.helpers import compose_message, get_duration_string
@@ -53,6 +54,7 @@ async def handle_menu_actions(
     callback: CallbackQuery,
     callback_data: MenuCallbackFactory,
     user: User,
+    settings: Settings,
     user_active: bool,
     db_session: AsyncSession,
 ) -> None:
@@ -73,7 +75,7 @@ async def handle_menu_actions(
                 )
                 logger.info(f"Connect VPN button pressed by user {user.username}")
             case MainMenuAction.RENEW_LINKS:
-                await renew_links(callback.message, user, db_session)
+                await renew_links(callback.message, user, settings, db_session)
                 await callback.message.answer(text=texts['links_refreshed'], reply_markup=show_links_kb())
                 logger.info(f"Renew links button pressed by user {user.username}")
             case MainMenuAction.ACCOUNT:

@@ -83,6 +83,7 @@ async def cmd_refund(
     message: Message,
     bot: Bot,
     user: User,
+    settings: Settings,
     command: CommandObject,
 ):
     if message.from_user.id not in settings.bot.ADMINS:
