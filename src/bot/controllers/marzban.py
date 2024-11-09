@@ -17,135 +17,126 @@ from database.models import User
 logger = logging.getLogger(__name__)
 
 
-async def get_marzban_token(settings: Settings) -> str:
-    url = f"{settings.marzban.BASE_URL}/api/admin/token"
-    headers = {
-        "accept": "application/json",
-        "Content-Type": "application/x-www-form-urlencoded",
-    }
-    data = {
-        "username": settings.marzban.ADMIN,
-        "password": settings.marzban.PASSWORD.get_secret_value(),
-    }
-    logger.info(f"Data: {data}")
-    logger.info(f"Headers: {headers}")
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url, headers=headers, data=data)
-        try:
-            response.raise_for_status()
-            logger.info(f"Obtaining Marzban token. Server response: {response.json()}")
-            token_data = response.json()
-            return token_data.get("access_token")
-        except httpx.HTTPStatusError as e:
-            logger.exception(f"Obtaining Marzban token. Server response with error: {response.json()}, error: {e}")
-            raise
+class MarzbanClient:
+    def __init__(
+        self,
+        settings: Settings,
+    ):
+        self.base_url = settings.marzban.BASE_URL
+        self.username = settings.marzban.ADMIN
+        self.password = settings.marzban.PASSWORD.get_secret_value()
+        self.client = httpx.AsyncClient()  # тут без контекстного менеджера создаём, значит ли это, что надо
+        #  будет везде явно закрывать клиент?
+        self.token = None
+        self.headers_with_token = {
+            "accept": "application/json",
+            "Authorization": f"Bearer {self.token}",
+            "Content-Type": "application/json",
+        }
 
+    async def init_token(self):
+        async with httpx.AsyncClient() as client:  # может это тоже надо заменить на общий вызов process_request?
+            headers = {
+                "accept": "application/json",
+                "Content-Type": "application/x-www-form-urlencoded",
+            }
+            data = {
+                "username": self.username,
+                "password": self.password,
+            }
+            response = await client.post(self.base_url, headers=headers, data=data)
+            try:
+                response.raise_for_status()
+                logger.info(f"Obtaining Marzban token. Server response: {response.json()}")
+                token_data = response.json()
+                self.token = token_data.get("access_token")
+            except httpx.HTTPStatusError as e:
+                logger.exception(f"Obtaining Marzban token. Server response with error: {response.json()}, error: {e}")
+                raise
+            # мы сделали перевыпуск токена только в том случае, когда токена нет сразу, либо при ошибке с получением
+            # но что будет, если вылезет ошибка токена в других методах? отыграет как надо перевыпуск нового?
+            # не достаточно понимаю, как работает, но сомневаюсь, что отыграет
 
-async def create_marzban_user(
-    username: str,
-    tg_id: int,
-    token: str,
-    settings: Settings,
-    duration: relativedelta | None = None,
-    expire: datetime | None = None
-) -> dict:
-    url = f"{settings.marzban.BASE_URL}/api/user"
-    if duration:
-        expire_date = datetime.now(UTC) + duration
-        expire_timestamp = int(expire_date.timestamp())
-    else:
-        expire_timestamp = int(expire.timestamp())
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json",
-    }
-    data = {
-        "username": pink_convert(username),
-        "expire": expire_timestamp,
-        "note": f"Telegram user: {username}, tg_id: {tg_id}",
-        "proxies": {"vmess": {"id": str(uuid4())}},
-    }
-    async with httpx.AsyncClient() as client:
-        response = await client.post(url, headers=headers, json=data)
+    async def process_request(
+        self,
+        method,
+        url: str,
+        headers: dict,
+        data: dict | None = None,
+        json: dict | None = None,
+    ) -> dict:
+        url = self.base_url + url
+        response = await method(url, headers=headers, json=json, data=data)
         try:
             response.raise_for_status()
             logger.info(f"Creating new Marzban user. Server response: {response.json()}")
             return response.json()
-        except httpx.HTTPStatusError as e:
-            logger.exception(f"Creating new Marzban user. Server response with error: {response.json()}, error: {e}")
-            raise
+        except httpx.HTTPStatusError:
+            await self.init_token()
+            try:
+                response = await method(self.base_url, headers=headers, json=json, data=data)
+                response.raise_for_status()
+                logger.info(f"Calling Marzban API with {method}. Server response: {response.json()}")
+                return response.json()
+            except httpx.HTTPStatusError as e:
+                logger.exception(f"Calling Marzban API with {method}. "
+                                 f"Server response with error: {response.json()}, error: {e}")
+                raise
 
+    async def create_marzban_user(
+        self,
+        username: str,
+        tg_id: int,
+        duration: relativedelta | None = None,
+        expire: datetime | None = None
+    ):
+        if duration:
+            expire_date = datetime.now(UTC) + duration
+            expire_timestamp = int(expire_date.timestamp())
+        else:
+            expire_timestamp = int(expire.timestamp())
+        json = {
+            "username": pink_convert(username),
+            "expire": expire_timestamp,
+            "note": f"Telegram user: {username}, tg_id: {tg_id}",
+            "proxies": {"vmess": {"id": str(uuid4())}},
+        }
+        await self.process_request(httpx.post, "/api/user", headers=self.headers_with_token, json=json)
 
-async def delete_marzban_user(username: str, token: str) -> dict:
-    url = f"{settings.marzban.BASE_URL}/api/user/{username}"
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json",
-    }
-    async with httpx.AsyncClient() as client:
-        response = await client.delete(url, headers=headers)
-        try:
-            response.raise_for_status()
-            logger.info(f"Deleting Marzban user: {username}. Server response: {response.json()}")
-            return response.json()
-        except httpx.HTTPStatusError as e:
-            logger.exception(
-                f"Deleting Marzban user: {username}. " f"Server response with error: {response.json()}, error: {e}"
-            )
-            raise
+    async def delete_marzban_user(self, username: str):
+        url = f"{self.base_url}/api/user/{username}"
+        await self.process_request(httpx.delete, url, headers=self.headers_with_token)
 
+    async def update_marzban_user_expiration(
+        self,
+        username: str,
+        duration: relativedelta,
+        user_expired_at: datetime,
+    ):
+        url = f"{self.base_url}/api/user/{username}"
+        now = datetime.now(UTC)
+        if user_expired_at.tzinfo is None:
+            user_expired_at = user_expired_at.replace(tzinfo=UTC)
+        if user_expired_at < now:
+            expire_date = now + duration
+            expire_timestamp = int(expire_date.timestamp())
+        else:
+            expire_date = user_expired_at + duration
+            expire_timestamp = int(expire_date.timestamp())
+        json = {"expire": expire_timestamp}
+        await self.process_request(httpx.put, url, headers=self.headers_with_token, json=json)
 
-async def get_marzban_user(username: str, token: str) -> dict:
-    url = f"{settings.marzban.BASE_URL}/api/user/{username}"
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json",
-    }
-    async with httpx.AsyncClient() as client:
-        response = await client.get(url, headers=headers)
-        try:
-            response.raise_for_status()
-            logger.info(f"Server response: {response.json()}")
-            return response.json()
-        except httpx.HTTPStatusError as e:
-            logger.exception(f"Server response with error: {response.json()}, error: {e}")
-            raise
-
-
-async def update_marzban_user_expiration(
-    username: str, token: str, duration: relativedelta, user_expired_at: datetime
-) -> dict:
-    url = f"{settings.marzban.BASE_URL}/api/user/{username}"
-    now = datetime.now(UTC)
-    if user_expired_at.tzinfo is None:
-        user_expired_at = user_expired_at.replace(tzinfo=UTC)
-    if user_expired_at < now:
-        expire_date = now + duration
-        expire_timestamp = int(expire_date.timestamp())
-    else:
-        expire_date = user_expired_at + duration
-        expire_timestamp = int(expire_date.timestamp())
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json",
-    }
-    data = {"expire": expire_timestamp}
-    async with httpx.AsyncClient() as client:
-        response = await client.put(url, headers=headers, json=data)
-        try:
-            response.raise_for_status()
-            logger.info(f"Updating Marzban user expiration for {username}. Server response: {response.json()}")
-            return response.json()
-        except httpx.HTTPStatusError as e:
-            logger.exception(
-                f"Updating Marzban user expiration for {username}. "
-                f"Server response with error: {response.json()}, error: {e}"
-            )
-            raise
+    async def renew_links(
+        self,
+        message: Message,
+        user: User,
+        db_session: AsyncSession
+    ):
+        # вот тут уже нужна помощь.
+        # может, этот метод и не надо в класс заносить?
+        # а с другой стороны, схуяли бы нет?
+        # токен у нас теперь автоматом создаётся при колле класса?
+        ...
 
 
 async def renew_links(message: Message, user: User, settings: Settings, db_session: AsyncSession):
