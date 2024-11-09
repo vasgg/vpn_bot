@@ -1,4 +1,4 @@
-from aiogram.types import InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardMarkup, WebAppInfo
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from bot.internal.callbacks import HelpCallbackFactory, MenuCallbackFactory, SubscriptionCallbackFactory
@@ -110,8 +110,8 @@ def account_kb() -> InlineKeyboardMarkup:
 
 def choose_device_kb() -> InlineKeyboardMarkup:
     kb = InlineKeyboardBuilder()
-    kb.button(text='iOS', url='https://teletype.in/@info_vpn/yLRxvXYMoM-')
-    kb.button(text='Android', url='https://teletype.in/@info_vpn/yLRxvXYMoM-')
+    kb.button(text='iOS', web_app=WebAppInfo(url='https://teletype.in/@info_vpn/yLRxvXYMoM-'))
+    kb.button(text='Android', web_app=WebAppInfo(url='https://teletype.in/@info_vpn/yLRxvXYMoM-'))
     kb.button(text=HelpButton.BACK_TO_HELP[0], callback_data=HelpButton.BACK_TO_HELP[1])
     kb.adjust(2, 1)
     return kb.as_markup()

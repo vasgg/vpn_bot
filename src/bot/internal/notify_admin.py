@@ -1,16 +1,14 @@
-import asyncio
 import logging
 import os
 
 from aiogram import Bot
-from asyncio import Queue, Task
 
-from bot.config import settings
+from bot.config import Settings
 
 logger = logging.getLogger(__name__)
 
 
-async def on_startup(bot: Bot):
+async def on_startup(bot: Bot, settings: Settings):
     folder = os.path.basename(os.getcwd())
     try:
         await bot.send_message(
@@ -22,10 +20,7 @@ async def on_startup(bot: Bot):
         logger.warning("Failed to send on shutdown notify")
 
 
-async def on_shutdown(bot: Bot, queue: Queue, task: Task, event: asyncio.Event):
-    await queue.join()
-    event.set()
-    await task
+async def on_shutdown(bot: Bot, settings: Settings):
     folder = os.path.basename(os.getcwd())
     try:
         await bot.send_message(

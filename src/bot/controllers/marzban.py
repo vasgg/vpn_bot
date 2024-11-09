@@ -9,7 +9,7 @@ from dateutil.relativedelta import relativedelta
 import httpx
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.config import settings
+from bot.config import Settings
 from bot.controllers.crud.link import update_links_url
 from bot.internal.helpers import pink_convert
 from database.models import User
@@ -17,7 +17,7 @@ from database.models import User
 logger = logging.getLogger(__name__)
 
 
-async def get_marzban_token() -> str:
+async def get_marzban_token(settings: Settings) -> str:
     url = f"{settings.marzban.BASE_URL}/api/admin/token"
     headers = {
         "accept": "application/json",
@@ -42,7 +42,12 @@ async def get_marzban_token() -> str:
 
 
 async def create_marzban_user(
-    username: str, tg_id: int, token: str, duration: relativedelta | None = None, expire: datetime | None = None
+    username: str,
+    tg_id: int,
+    token: str,
+    settings: Settings,
+    duration: relativedelta | None = None,
+    expire: datetime | None = None
 ) -> dict:
     url = f"{settings.marzban.BASE_URL}/api/user"
     if duration:
@@ -143,16 +148,16 @@ async def update_marzban_user_expiration(
             raise
 
 
-async def renew_links(message: Message, user: User, db_session: AsyncSession):
+async def renew_links(message: Message, user: User, settings: Settings, db_session: AsyncSession):
     async with ChatActionSender.typing(bot=message.bot, chat_id=message.from_user.id):
-        marzban_token = await get_marzban_token()
+        marzban_token = await get_marzban_token(settings=settings)
         await delete_marzban_user(user.marzban_username, marzban_token)
         await sleep(2)
-        marzban_token = await get_marzban_token()
         new_marzban_user = await create_marzban_user(
             username=user.username,
             tg_id=message.from_user.id,
             token=marzban_token,
+            settings=settings,
             expire=user.expired_at,
         )
         user.marzban_username = new_marzban_user.get("username")

@@ -7,7 +7,7 @@ from aiogram.filters import Command, CommandObject
 from aiogram.types import Message, PreCheckoutQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.config import settings
+from bot.config import Settings
 from bot.controllers.crud.user import update_db_user_expiration
 from bot.internal.enums import SubscriptionPlan, SubscriptionStatus
 from bot.internal.keyboards import connect_vpn_kb
@@ -35,16 +35,21 @@ async def on_pre_checkout_query(
 async def on_successful_payment(
     message: Message,
     user: User,
+    settings: Settings,
     db_session: AsyncSession,
 ):
     payload = message.successful_payment.invoice_payload
     if payload == SubscriptionPlan.ONE_WEEK_DEMO_ACCESS:
         user.demo_access_used = True
     duration = goods[payload]['duration']
-    marzban_token = await get_marzban_token()
+    marzban_token = await get_marzban_token(settings=settings)
     if not user.marzban_username:
         new_marzban_user = await create_marzban_user(
-            username=user.username, tg_id=message.from_user.id, token=marzban_token, duration=duration
+            username=user.username,
+            tg_id=message.from_user.id,
+            token=marzban_token,
+            settings=settings,
+            duration=duration
         )
         expire_timestamp = new_marzban_user.get("expire")
         expire_date = datetime.fromtimestamp(expire_timestamp)

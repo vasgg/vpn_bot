@@ -50,6 +50,3 @@ class Settings(BaseSettings):
     marzban: MarzbanConfig = MarzbanConfig()
 
     model_config = assign_config_dict()
-
-
-settings = Settings()

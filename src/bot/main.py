@@ -10,6 +10,8 @@ from sentry_sdk import init
 
 from bot.internal.enums import Stage
 from bot.middlewares.auth_middleware import AuthMiddleware
+from bot.middlewares.logging_middleware import LoggingMiddleware
+from bot.middlewares.sentry_middleware import AiogramSentryContextMiddleware
 from database.database_connector import get_db
 from bot.internal.commands import set_bot_commands
 from bot.internal.notify_admin import on_shutdown, on_startup
@@ -21,11 +23,12 @@ from bot.handlers.errors_handler import router as errors_router
 from bot.handlers.payment_handlers import router as payment_router
 from bot.internal.config_dicts import setup_logs
 
-from bot.config import settings
+from bot.config import Settings
 
 
 async def main():
     setup_logs('vpn_bot')
+    settings = Settings()
 
     if settings.bot.SENTRY_DSN and settings.bot.STAGE == Stage.PROD:
         init(
@@ -33,7 +36,6 @@ async def main():
             traces_sample_rate=1.0,
             profiles_sample_rate=1.0,
         )
-
     session = AiohttpSession(timeout=120)
 
     bot = Bot(
@@ -56,6 +58,9 @@ async def main():
     dispatcher.callback_query.middleware(db_session_middleware)
     dispatcher.message.middleware(AuthMiddleware())
     dispatcher.callback_query.middleware(AuthMiddleware())
+    dispatcher.message.middleware.register(LoggingMiddleware())
+    dispatcher.callback_query.middleware.register(LoggingMiddleware())
+    dispatcher.update.outer_middleware(AiogramSentryContextMiddleware())
     dispatcher.include_routers(
         commands_router,
         callbacks_router,
