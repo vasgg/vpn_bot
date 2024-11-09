@@ -25,10 +25,11 @@ from bot.internal.config_dicts import setup_logs
 
 from bot.config import Settings
 
+settings = Settings()
+
 
 async def main():
     setup_logs('vpn_bot')
-    settings = Settings()
 
     if settings.bot.SENTRY_DSN and settings.bot.STAGE == Stage.PROD:
         init(
