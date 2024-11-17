@@ -63,15 +63,15 @@ goods = {
         "duration": relativedelta(weeks=1),
     },
     SubscriptionPlan.ONE_MONTH_SUBSCRIPTION: {
-        "price": 10,
+        "price": 150,
         "duration": relativedelta(months=1),
     },
     SubscriptionPlan.SIX_MONTH_SUBSCRIPTION: {
-        "price": 20,
+        "price": 700,
         "duration": relativedelta(months=6),
     },
     SubscriptionPlan.ONE_YEAR_SUBSCRIPTION: {
-        "price": 30,
+        "price": 1200,
         "duration": relativedelta(years=1),
     },
 }
