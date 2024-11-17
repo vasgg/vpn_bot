@@ -13,9 +13,10 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - "5678:5432"
+      - "127.0.0.1:5678:5432"
   bot:
     build: .
+    network_mode: host
     depends_on:
       postgres:
         condition: service_healthy

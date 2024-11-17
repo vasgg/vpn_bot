@@ -1,3 +1,4 @@
+import asyncio
 from asyncio import sleep
 from datetime import UTC, datetime
 import logging
@@ -7,9 +8,10 @@ from aiogram.types import Message
 from aiogram.utils.chat_action import ChatActionSender
 from dateutil.relativedelta import relativedelta
 import httpx
+from pydantic import SecretStr
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from bot.config import Settings
+from bot.config import Settings, MarzbanConfig
 from bot.controllers.crud.link import update_links_url
 from bot.internal.helpers import pink_convert
 from database.models import User
@@ -17,15 +19,15 @@ from database.models import User
 logger = logging.getLogger(__name__)
 
 
-async def get_marzban_token(settings: Settings) -> str:
-    url = f"{settings.marzban.BASE_URL}/api/admin/token"
+async def get_marzban_token(marzban: MarzbanConfig) -> str:
+    url = f"{marzban.BASE_URL}/api/admin/token"
     headers = {
         "accept": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
     }
     data = {
-        "username": settings.marzban.ADMIN,
-        "password": settings.marzban.PASSWORD.get_secret_value(),
+        "username": marzban.ADMIN,
+        "password": marzban.PASSWORD.get_secret_value(),
     }
     logger.info(f"Data: {data}")
     logger.info(f"Headers: {headers}")
@@ -65,6 +67,16 @@ async def create_marzban_user(
         "expire": expire_timestamp,
         "note": f"Telegram user: {username}, tg_id: {tg_id}",
         "proxies": {"vmess": {"id": str(uuid4())}},
+        "inbounds": {
+            "vmess": [
+                "VMESS + TCP",
+                "VMESS + WS"
+            ],
+            "vless": [
+                "VLESS + TCP",
+                "VLESS + WS"
+            ]
+        },
     }
     async with httpx.AsyncClient() as client:
         response = await client.post(url, headers=headers, json=data)
@@ -167,3 +179,12 @@ async def renew_links(message: Message, user: User, settings: Settings, db_sessi
         user.marzban_username = new_marzban_user.get("username")
         tcp_link, websocket_link, *_ = new_marzban_user.get("links")
         await update_links_url(user.tg_id, [tcp_link, websocket_link], db_session)
+
+
+async def main():
+    marz = MarzbanConfig(BASE_URL="http://localhost:8000", ADMIN="horokey", PASSWORD=SecretStr("7f4df451"))
+    token = await get_marzban_token(marz)
+    print(token)
+
+if __name__ == '__main__':
+    asyncio.run(main())
