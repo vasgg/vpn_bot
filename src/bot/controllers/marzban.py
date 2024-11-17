@@ -166,7 +166,7 @@ async def update_marzban_user_expiration(
 
 async def renew_links(message: Message, user: User, settings: Settings, db_session: AsyncSession):
     async with ChatActionSender.typing(bot=message.bot, chat_id=message.from_user.id):
-        marzban_token = await get_marzban_token(settings)
+        marzban_token = await get_marzban_token(settings.marzban)
         await delete_marzban_user(user.marzban_username, marzban_token, settings)
         await sleep(2)
         new_marzban_user = await create_marzban_user(

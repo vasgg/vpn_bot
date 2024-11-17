@@ -42,7 +42,7 @@ async def on_successful_payment(
     if payload == SubscriptionPlan.ONE_WEEK_DEMO_ACCESS:
         user.demo_access_used = True
     duration = goods[payload]['duration']
-    marzban_token = await get_marzban_token(settings=settings)
+    marzban_token = await get_marzban_token(settings.marzban)
     if not user.marzban_username:
         new_marzban_user = await create_marzban_user(
             username=user.username,
