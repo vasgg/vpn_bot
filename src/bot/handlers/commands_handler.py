@@ -73,7 +73,7 @@ async def command_handler(
                 raise RuntimeError("Unexpected command")
         return text, markup
 
-    text_, markup_ = produce_command_response()
+    text_, markup_ = await produce_command_response()
     await message.answer(
         text=text_,
         reply_markup=markup_,
