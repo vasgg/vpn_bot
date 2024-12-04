@@ -35,10 +35,14 @@ router = Router()
 async def subscription_prolongation(
     callback: CallbackQuery,
     callback_data: SubscriptionCallbackFactory,
+    user: User,
 ) -> None:
     await callback.answer()
     prices = [LabeledPrice(label="XTR", amount=goods[callback_data.plan]['price'])]
     duration = get_duration_string(goods[callback_data.plan]['duration'])
+    if duration == "1 week" and user.demo_access_used:
+        await callback.message.answer(texts['demo_used'])
+        return
     await callback.message.answer_invoice(
         title="VPN access",
         description=duration,
@@ -47,6 +51,7 @@ async def subscription_prolongation(
         prices=prices,
         start_parameter="stars-payment",
     )
+    await callback.message.delete()
 
 
 @router.callback_query(MenuCallbackFactory.filter())
