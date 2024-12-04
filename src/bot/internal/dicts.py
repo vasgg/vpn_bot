@@ -52,6 +52,7 @@ texts = {
                  'If none of the servers provide you with high speed, please refer to the "VPN not working" help section.',
     'choose_plan': 'Add more time to your access.',
     'choose_device': 'Choose a device:',
+    'demo_used': 'You have already used a demo access.',
     'links_message': '<pre>{links}</pre>',
     'links_refreshed': 'Links successfully refreshed.',
     'support': 'You can contact support by sending a message to @honeybadger367',
