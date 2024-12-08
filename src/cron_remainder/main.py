@@ -31,11 +31,9 @@ async def run_task(db: 'DatabaseConnector',
             user_expiring = now < user.expired_at.replace(tzinfo=UTC) < tomorrow
             if user_expiring:
                 logging.info(f"User expiring: {user}, notifying")
-                if user.tg_id != 99988303:
-                    continue
                 await bot.send_message(
                     chat_id=user.tg_id,
-                    text='Ваша подписка истекает завтра.\n',
+                    text='Your subscription expires tomorrow\n',
                     reply_markup=buy_subscription_kb(demo_access_used=True))
 
 
