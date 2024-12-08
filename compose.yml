@@ -13,13 +13,21 @@ services:
       timeout: 5s
       retries: 5
     restart: always
-    ports:
-      - "127.0.0.1:5432:5432"
   bot:
     build:
       context: .
       target: bot_image
     network_mode: host
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: always
+    volumes:
+      - ./logs:/app/logs
+  cron_task:
+    build:
+      context: .
+      target: task_image
     depends_on:
       postgres:
         condition: service_healthy
