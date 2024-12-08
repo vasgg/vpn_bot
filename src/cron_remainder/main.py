@@ -25,7 +25,10 @@ async def run_task(db: 'DatabaseConnector',
             logging.debug(f"Checking user {user}...")
             if user.expired_at is None:
                 continue
-            user_expiring = now - timedelta(days=1) < user.expired_at.replace(tzinfo=UTC) < now
+            tomorrow = now + timedelta(days=1)
+            logging.debug(f"Left bound: {now}")
+            logging.debug(f"Right bound: {tomorrow}")
+            user_expiring = now < user.expired_at.replace(tzinfo=UTC) < tomorrow
             if user_expiring:
                 logging.info(f"User expiring: {user}, notifying")
                 if user.tg_id != 99988303:
@@ -57,6 +60,7 @@ async def main():
 
     logging.debug("task started")
     await run_task(db, bot)
+    logging.debug("task ended")
 
 
 def run_main():
