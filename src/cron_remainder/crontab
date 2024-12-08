@@ -1,1 +1,1 @@
-* * * * *  cd /app && periodic-task-run
+0 15 * * *  cd /app && periodic-task-run

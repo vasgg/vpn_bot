@@ -26,8 +26,6 @@ async def run_task(db: 'DatabaseConnector',
             if user.expired_at is None:
                 continue
             tomorrow = now + timedelta(days=1)
-            logging.debug(f"Left bound: {now}")
-            logging.debug(f"Right bound: {tomorrow}")
             user_expiring = now < user.expired_at.replace(tzinfo=UTC) < tomorrow
             if user_expiring:
                 logging.info(f"User expiring: {user}, notifying")
