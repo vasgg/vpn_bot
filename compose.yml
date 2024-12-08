@@ -5,6 +5,8 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "127.0.0.1:5678:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
@@ -28,6 +30,7 @@ services:
     build:
       context: .
       target: task_image
+    network_mode: host
     depends_on:
       postgres:
         condition: service_healthy
