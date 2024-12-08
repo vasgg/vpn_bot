@@ -9,5 +9,5 @@ RUN chmod +x /app/run.sh
 CMD ["/app/run.sh"]
 
 FROM base as task_image
-RUN crontab crontab
+RUN crontab ./src/cron_remainder/crontab
 CMD ["crond", "-f"]

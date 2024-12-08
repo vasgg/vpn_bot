@@ -26,6 +26,12 @@ async def get_user_from_db_by_tg_id(telegram_id: int, db_session: AsyncSession) 
     return user
 
 
+async def get_all_users(db_session: AsyncSession) -> list[User]:
+    query = select(User)
+    result: Result = await db_session.execute(query)
+    return list(result.scalars().all())
+
+
 async def update_db_user_expiration(user: User, duration: relativedelta, db_session: AsyncSession):
     current_time = datetime.now(UTC)
     if user.expired_at > current_time:

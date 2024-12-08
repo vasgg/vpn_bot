@@ -32,6 +32,7 @@ requires-python = ">=3.12"
 
 [project.scripts]
 bot-run = "bot.main:run_main"
+periodic-task-run = "cron_remainder.main:run_main"
 
 [tool.black]
 line-length = 119

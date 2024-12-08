@@ -16,7 +16,7 @@ class MenuButton:
     RENEW_LINKS = "🔄 Renew links", MenuCallbackFactory(action=MainMenuAction.RENEW_LINKS)
     CLOSE = "❌ Close", MenuCallbackFactory(action=MainMenuAction.CLOSE)
     HELP = "🆘 Help", MenuCallbackFactory(action=MainMenuAction.HELP)
-    BACK_TO_MENU = "⬅️ Back", MenuCallbackFactory(action=MainMenuAction.BACK_TO_MENU)
+    BACK_TO_MENU = "🏠 Main Menu", MenuCallbackFactory(action=MainMenuAction.BACK_TO_MENU)
 
 
 class HelpButton:
