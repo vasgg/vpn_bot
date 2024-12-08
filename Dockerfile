@@ -6,7 +6,7 @@ RUN --mount=from=ghcr.io/astral-sh/uv:0.5.1,source=/uv,target=/bin/uv uv pip ins
 
 FROM base as bot_image
 RUN chmod +x /app/run.sh
-CMD ["bash", "-c", "/app/run.sh"]
+CMD ["/app/run.sh"]
 
 FROM base as task_image
 RUN crontab crontab
