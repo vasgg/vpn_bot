@@ -60,6 +60,9 @@ async def main():
     await run_task(db, bot)
     logging.debug("task ended")
 
+    await bot.session.close()
+    await db.dispose()
+
 
 def run_main():
     run(main())
