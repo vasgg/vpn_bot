@@ -16,7 +16,9 @@ services:
     ports:
       - "127.0.0.1:5678:5432"
   bot:
-    build: .
+    build:
+      context: .
+      target: bot_image
     network_mode: host
     depends_on:
       postgres:
@@ -24,8 +26,25 @@ services:
     restart: always
     volumes:
       - ./logs:/app/logs
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+  pgbackups:
+    image: prodrigestivill/postgres-backup-local
+    restart: always
+    volumes:
+      - ./pgbackups:/backups
+    depends_on:
+      - postgres
+    environment:
+        POSTGRES_HOST: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: ${DB_PASSWORD}
+        POSTGRES_DB: ${DB_NAME}
+        POSTGRES_EXTRA_OPTS: "-Z1 --schema=public --blobs"
+        SCHEDULE: "@daily"
+        BACKUP_ON_START: TRUE
+        BACKUP_KEEP_DAYS: 7
+        BACKUP_KEEP_WEEKS: 4
+        BACKUP_KEEP_MONTHS: 6
+        HEALTHCHECK_PORT: 8080
 volumes:
   pgdata:
 
